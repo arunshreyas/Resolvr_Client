@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Complaint, ComplaintStatus } from "@/app/lib/complaints";
 import {
@@ -17,7 +18,7 @@ type AdminUser = {
   clerkId: string | null;
   email: string;
   name: string | null;
-  complaints: Complaint[];
+  complaintCount: number;
 };
 
 type DisputeAlert = {
@@ -37,6 +38,14 @@ type DisputeAlert = {
   };
 };
 
+type RankedComplaint = Complaint & {
+  priorityScore: number;
+  priorityLabel: "Critical" | "High" | "Medium" | "Low";
+  duplicateCount: number;
+  priorityReasons: string[];
+  clusterKey: string;
+};
+
 type StatusFilter = "ALL" | ComplaintStatus;
 
 const ComplaintLeafletMap = dynamic(
@@ -53,8 +62,10 @@ const statusActions: ComplaintStatus[] = [
 
 export default function AdminDashboard() {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const { user, isLoaded, isSignedIn } = useUser();
+  const { getToken } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
-  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [complaints, setComplaints] = useState<RankedComplaint[]>([]);
   const [disputeAlerts, setDisputeAlerts] = useState<DisputeAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,30 +74,50 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
+  const allowedAdminEmails = useMemo(
+    () =>
+      process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean) || [],
+    [],
+  );
+  const currentUserEmail =
+    user?.primaryEmailAddress?.emailAddress?.toLowerCase() || null;
 
   const loadData = useCallback(async () => {
+    if (!isSignedIn || !currentUserEmail) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const [usersResponse, complaintsResponse, alertsResponse] = await Promise.all([
-        fetch(`${apiBaseUrl}/users`, { cache: "no-store" }),
-        fetch(`${apiBaseUrl}/complaints`, { cache: "no-store" }),
-        fetch(`${apiBaseUrl}/complaints/dispute-alerts`, { cache: "no-store" }),
-      ]);
+      const token = await getToken();
 
-      if (!usersResponse.ok || !complaintsResponse.ok) {
+      if (!token) {
+        throw new Error("Missing admin session token.");
+      }
+
+      const response = await fetch(`${apiBaseUrl}/complaints/admin/board`, {
+        cache: "no-store",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
         throw new Error("Failed to load admin data.");
       }
 
-      const [usersData, complaintsData, alertsData] = (await Promise.all([
-        usersResponse.json(),
-        complaintsResponse.json(),
-        alertsResponse.ok ? alertsResponse.json() : Promise.resolve([]),
-      ])) as [AdminUser[], Complaint[], DisputeAlert[]];
+      const payload = (await response.json()) as {
+        users: AdminUser[];
+        complaints: RankedComplaint[];
+        disputeAlerts: DisputeAlert[];
+      };
 
-      setUsers(usersData);
-      setComplaints(complaintsData);
-      setDisputeAlerts(alertsData);
+      setUsers(payload.users);
+      setComplaints(payload.complaints);
+      setDisputeAlerts(payload.disputeAlerts);
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "Could not load admin dashboard.",
@@ -94,11 +125,30 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [apiBaseUrl]);
+  }, [apiBaseUrl, currentUserEmail, getToken, isSignedIn]);
 
   useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (!isSignedIn) {
+      setLoading(false);
+      setError("Please sign in with an admin account.");
+      return;
+    }
+
+    if (
+      allowedAdminEmails.length > 0 &&
+      (!currentUserEmail || !allowedAdminEmails.includes(currentUserEmail))
+    ) {
+      setLoading(false);
+      setError("This account is not on the admin allowlist.");
+      return;
+    }
+
     void loadData();
-  }, [loadData]);
+  }, [allowedAdminEmails, currentUserEmail, isLoaded, isSignedIn, loadData]);
 
   useEffect(() => {
     if (!message) return;
@@ -108,12 +158,7 @@ export default function AdminDashboard() {
 
   const filteredComplaints = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    return [...complaints]
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      )
-      .filter((complaint) => {
+    return complaints.filter((complaint) => {
         const matchesStatus =
           statusFilter === "ALL" || complaint.status === statusFilter;
         const haystack = [
@@ -148,24 +193,32 @@ export default function AdminDashboard() {
     (complaint) => complaint.status === "REJECTED",
   ).length;
   const topUsers = [...users]
-    .sort((a, b) => b.complaints.length - a.complaints.length)
+    .sort((a, b) => b.complaintCount - a.complaintCount)
     .slice(0, 5);
   const openUrgentAlerts = disputeAlerts.filter((alert) => alert.status === "OPEN");
+  const topPriorityComplaints = filteredComplaints.slice(0, 4);
 
   async function patchComplaint(id: number, status: ComplaintStatus) {
     try {
       setBusyId(id);
       setError(null);
+      const token = await getToken();
+
       const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ status }),
       });
 
       if (!response.ok) throw new Error("Failed to update complaint.");
       const updated = (await response.json()) as Complaint;
       setComplaints((current) =>
-        current.map((complaint) => (complaint.id === id ? updated : complaint)),
+        current.map((complaint) =>
+          complaint.id === id ? { ...complaint, ...updated } : complaint,
+        ),
       );
       setSelectedId(id);
       setMessage(`Complaint C-${id} updated.`);
@@ -183,15 +236,25 @@ export default function AdminDashboard() {
     try {
       setBusyId(id);
       setError(null);
+      const token = await getToken();
+
       const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) throw new Error("Failed to delete complaint.");
       setComplaints((current) => current.filter((complaint) => complaint.id !== id));
+      const complaintOwnerId =
+        complaints.find((complaint) => complaint.id === id)?.user?.id ?? null;
       setUsers((current) =>
         current.map((user) => ({
           ...user,
-          complaints: user.complaints.filter((complaint) => complaint.id !== id),
+          complaintCount:
+            user.id === complaintOwnerId
+              ? Math.max(0, user.complaintCount - 1)
+              : user.complaintCount,
         })),
       );
       if (selectedId === id) setSelectedId(null);
@@ -223,6 +286,12 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="flex flex-wrap gap-4">
+          <a
+            href="#complaint-queue"
+            className="dm-sans-ui rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-700 shadow-sm"
+          >
+            Jump to queue
+          </a>
           <button
             type="button"
             onClick={() => void loadData()}
@@ -258,6 +327,81 @@ export default function AdminDashboard() {
             <p className="dm-sans-ui mt-3 text-xs font-medium text-slate-400">{stat.tag}</p>
           </div>
         ))}
+      </div>
+
+      <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="dm-sans-ui text-sm font-medium text-primary">
+              Priority queue preview
+            </p>
+            <h2 className="mt-2 text-3xl font-black tracking-tighter text-slate-900">
+              Highest-priority complaints right now
+            </h2>
+          </div>
+          <a
+            href="#complaint-queue"
+            className="dm-sans-ui inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white"
+          >
+            <span className="material-symbols-outlined text-base">south</span>
+            Open full queue
+          </a>
+        </div>
+
+        <div className="mt-6 grid gap-4 xl:grid-cols-2">
+          {loading ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="h-32 rounded-[28px] bg-slate-50 animate-pulse"
+              ></div>
+            ))
+          ) : topPriorityComplaints.length === 0 ? (
+            <div className="rounded-[28px] border border-slate-100 bg-slate-50 px-6 py-10">
+              <p className="text-xl font-black text-slate-900">
+                No complaints to rank yet
+              </p>
+            </div>
+          ) : (
+            topPriorityComplaints.map((complaint) => (
+              <div
+                key={complaint.id}
+                className="rounded-[28px] border border-slate-100 bg-slate-50 px-6 py-5"
+              >
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="dm-sans-ui rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+                    C-{complaint.id}
+                  </span>
+                  <span className="dm-sans-ui rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+                    {complaint.priorityLabel}
+                  </span>
+                  <span
+                    className={`dm-sans-ui rounded-full px-3 py-1 text-xs font-medium ${getComplaintStatusTone(complaint.status).badge}`}
+                  >
+                    {getComplaintStatusLabel(complaint.status)}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-2xl font-black text-slate-900">
+                  {complaint.title}
+                </h3>
+                <p className="dm-sans-ui mt-2 line-clamp-2 text-sm text-slate-500">
+                  {complaint.description}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                  <p className="dm-sans-ui text-xs font-medium text-amber-700">
+                    Score {complaint.priorityScore}
+                  </p>
+                  <p className="dm-sans-ui text-xs font-medium text-amber-700">
+                    {complaint.duplicateCount} similar
+                  </p>
+                  <p className="dm-sans-ui text-xs font-medium text-slate-400">
+                    {complaint.user?.name || complaint.user?.email || complaint.userEmail}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       <div className="rounded-[44px] border border-amber-200 bg-amber-50/80 p-8 shadow-2xl shadow-amber-100/40">
@@ -348,7 +492,10 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
+        <div
+          id="complaint-queue"
+          className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20"
+        >
           <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h2 className="text-3xl font-black tracking-tighter text-slate-900">Queue Management</h2>
@@ -409,6 +556,9 @@ export default function AdminDashboard() {
                           <span className="dm-sans-ui rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
                             C-{complaint.id}
                           </span>
+                          <span className="dm-sans-ui rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+                            {complaint.priorityLabel} priority
+                          </span>
                           <span className={`dm-sans-ui rounded-full px-3 py-1 text-xs font-medium ${tone.badge}`}>
                             {getComplaintStatusLabel(complaint.status)}
                           </span>
@@ -416,6 +566,12 @@ export default function AdminDashboard() {
                         <p className="mt-4 text-xl font-black text-slate-900">{complaint.title}</p>
                         <p className="dm-sans-ui mt-2 line-clamp-2 text-sm text-slate-500">{complaint.description}</p>
                         <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                          <p className="dm-sans-ui text-xs font-medium text-amber-700">
+                            Score {complaint.priorityScore}
+                          </p>
+                          <p className="dm-sans-ui text-xs font-medium text-amber-700">
+                            {complaint.duplicateCount} similar
+                          </p>
                           <p className="dm-sans-ui text-xs font-medium text-slate-400">
                             {complaint.user?.name || complaint.user?.email || complaint.userEmail}
                           </p>
@@ -485,6 +641,22 @@ export default function AdminDashboard() {
                 <p className="text-2xl font-black text-slate-900">{selectedComplaint.title}</p>
                 <p className="dm-sans-ui text-sm leading-7 text-slate-500">{selectedComplaint.description}</p>
                 <div className="grid gap-3">
+                  <div className="rounded-[22px] bg-amber-50 px-4 py-4">
+                    <p className="dm-sans-ui text-xs font-medium text-amber-700">Priority</p>
+                    <p className="mt-2 text-lg font-black text-slate-900">
+                      {selectedComplaint.priorityLabel} ({selectedComplaint.priorityScore})
+                    </p>
+                    <div className="mt-3 space-y-1">
+                      {selectedComplaint.priorityReasons.map((reason) => (
+                        <p
+                          key={reason}
+                          className="dm-sans-ui text-xs font-medium text-amber-800"
+                        >
+                          {reason}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
                   <div className="rounded-[22px] bg-slate-50 px-4 py-4">
                     <p className="dm-sans-ui text-xs font-medium text-slate-400">Reporter</p>
                     <p className="mt-2 text-lg font-black text-slate-900">
@@ -520,7 +692,7 @@ export default function AdminDashboard() {
                 <p className="dm-sans-ui text-sm text-slate-500">No users synced yet.</p>
               ) : (
                 [...users]
-                  .sort((a, b) => b.complaints.length - a.complaints.length)
+                  .sort((a, b) => b.complaintCount - a.complaintCount)
                   .map((user) => (
                     <div
                       key={user.id}
@@ -539,7 +711,7 @@ export default function AdminDashboard() {
                           </p>
                         </div>
                         <div className="rounded-2xl bg-white px-4 py-3 text-center">
-                          <p className="text-2xl font-black text-slate-900">{user.complaints.length}</p>
+                          <p className="text-2xl font-black text-slate-900">{user.complaintCount}</p>
                           <p className="dm-sans-ui text-xs font-medium text-slate-400">reports</p>
                         </div>
                       </div>
@@ -621,7 +793,7 @@ export default function AdminDashboard() {
                   <p className="dm-sans-ui text-sm text-white/80">
                     {index + 1}. {user.name || user.email.split("@")[0]}
                   </p>
-                  <p className="text-sm font-black">{user.complaints.length}</p>
+                  <p className="text-sm font-black">{user.complaintCount}</p>
                 </div>
               ))}
               {!loading && topUsers.length === 0 ? (
