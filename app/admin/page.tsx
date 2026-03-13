@@ -20,6 +20,23 @@ type AdminUser = {
   complaints: Complaint[];
 };
 
+type DisputeAlert = {
+  id: number;
+  complaintId: number;
+  userEmail: string;
+  userMessage: string;
+  assistantResponse: string;
+  urgentReason: string | null;
+  status: "OPEN" | "REVIEWED" | "DISMISSED";
+  createdAt: string;
+  complaint: Complaint;
+  user: {
+    id: number;
+    name: string | null;
+    email: string;
+  };
+};
+
 type StatusFilter = "ALL" | ComplaintStatus;
 
 const ComplaintLeafletMap = dynamic(
@@ -38,6 +55,7 @@ export default function AdminDashboard() {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [disputeAlerts, setDisputeAlerts] = useState<DisputeAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -50,22 +68,25 @@ export default function AdminDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const [usersResponse, complaintsResponse] = await Promise.all([
+      const [usersResponse, complaintsResponse, alertsResponse] = await Promise.all([
         fetch(`${apiBaseUrl}/users`, { cache: "no-store" }),
         fetch(`${apiBaseUrl}/complaints`, { cache: "no-store" }),
+        fetch(`${apiBaseUrl}/complaints/dispute-alerts`, { cache: "no-store" }),
       ]);
 
       if (!usersResponse.ok || !complaintsResponse.ok) {
         throw new Error("Failed to load admin data.");
       }
 
-      const [usersData, complaintsData] = (await Promise.all([
+      const [usersData, complaintsData, alertsData] = (await Promise.all([
         usersResponse.json(),
         complaintsResponse.json(),
-      ])) as [AdminUser[], Complaint[]];
+        alertsResponse.ok ? alertsResponse.json() : Promise.resolve([]),
+      ])) as [AdminUser[], Complaint[], DisputeAlert[]];
 
       setUsers(usersData);
       setComplaints(complaintsData);
+      setDisputeAlerts(alertsData);
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "Could not load admin dashboard.",
@@ -129,6 +150,7 @@ export default function AdminDashboard() {
   const topUsers = [...users]
     .sort((a, b) => b.complaints.length - a.complaints.length)
     .slice(0, 5);
+  const openUrgentAlerts = disputeAlerts.filter((alert) => alert.status === "OPEN");
 
   async function patchComplaint(id: number, status: ComplaintStatus) {
     try {
@@ -236,6 +258,93 @@ export default function AdminDashboard() {
             <p className="dm-sans-ui mt-3 text-xs font-medium text-slate-400">{stat.tag}</p>
           </div>
         ))}
+      </div>
+
+      <div className="rounded-[44px] border border-amber-200 bg-amber-50/80 p-8 shadow-2xl shadow-amber-100/40">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="dm-sans-ui text-sm font-medium text-amber-700">
+              Urgent dispute alerts
+            </p>
+            <h2 className="mt-2 text-3xl font-black tracking-tighter text-slate-900">
+              Feedback escalations for admin review
+            </h2>
+            <p className="dm-sans-ui mt-2 text-sm text-slate-600">
+              These complaints were flagged by the dispute assistant as needing quick human attention.
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+            <p className="dm-sans-ui text-sm font-medium text-slate-600">
+              {openUrgentAlerts.length} open alert{openUrgentAlerts.length === 1 ? "" : "s"}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4">
+          {loading ? (
+            Array.from({ length: 2 }).map((_, index) => (
+              <div key={index} className="h-32 rounded-[28px] bg-white/70 animate-pulse"></div>
+            ))
+          ) : openUrgentAlerts.length === 0 ? (
+            <div className="rounded-[28px] border border-white/70 bg-white/70 px-6 py-8">
+              <p className="text-xl font-black text-slate-900">No urgent disputes right now</p>
+              <p className="dm-sans-ui mt-2 text-sm text-slate-500">
+                Fresh urgent complaint disputes will surface here automatically.
+              </p>
+            </div>
+          ) : (
+            openUrgentAlerts.map((alert) => (
+              <div
+                key={alert.id}
+                className="rounded-[28px] border border-white/70 bg-white/80 px-6 py-6"
+              >
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="dm-sans-ui rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+                        Urgent dispute
+                      </span>
+                      <span className="dm-sans-ui rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+                        C-{alert.complaintId}
+                      </span>
+                    </div>
+                    <h3 className="mt-4 text-2xl font-black text-slate-900">
+                      {alert.complaint?.title || `Complaint C-${alert.complaintId}`}
+                    </h3>
+                    <p className="dm-sans-ui mt-2 text-sm text-slate-500">
+                      {alert.user?.name || alert.userEmail} • {formatComplaintDate(alert.createdAt)}
+                    </p>
+                    {alert.urgentReason ? (
+                      <p className="dm-sans-ui mt-4 rounded-2xl bg-amber-100/70 px-4 py-3 text-sm font-medium text-amber-900">
+                        {alert.urgentReason}
+                      </p>
+                    ) : null}
+                    <p className="dm-sans-ui mt-4 line-clamp-3 text-sm leading-7 text-slate-600">
+                      {alert.userMessage}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href={`/dashboard/complaint/${alert.complaintId}`}
+                      className="dm-sans-ui inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700"
+                    >
+                      <span className="material-symbols-outlined text-base">visibility</span>
+                      View complaint
+                    </Link>
+                    <Link
+                      href={`/dashboard/complaint/${alert.complaintId}/feedback`}
+                      className="dm-sans-ui inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white"
+                    >
+                      <span className="material-symbols-outlined text-base">forum</span>
+                      Open dispute thread
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.2fr_0.8fr]">

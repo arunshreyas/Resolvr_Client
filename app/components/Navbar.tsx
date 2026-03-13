@@ -50,17 +50,40 @@ export default function Navbar() {
               </Show>
               <Show when="signed-in">
                 <div className="flex items-center gap-4">
-                  <UserButton 
+                  <Link
+                    href="/dashboard/settings"
+                    aria-label="Open local settings"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-900/10 bg-white/70 text-slate-600 transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">
+                      computer
+                    </span>
+                  </Link>
+                  <UserButton
                     appearance={{
                       elements: {
-                        userButtonAvatarBox: "w-10 h-10 rounded-xl"
-                      }
+                        userButtonAvatarBox: "w-10 h-10 rounded-xl",
+                      },
                     }}
-                  />
+                  >
+                    <UserButton.MenuItems>
+                      <UserButton.Action
+                        label="Open full settings"
+                        labelIcon={
+                          <span className="material-symbols-outlined text-[18px]">
+                            tune
+                          </span>
+                        }
+                        onClick={() => {
+                          window.location.href = "/dashboard/settings";
+                        }}
+                      />
+                    </UserButton.MenuItems>
+                  </UserButton>
                 </div>
               </Show>
-              <Link href="/dashboard/submit" className="dm-sans-ui whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
-                Submit Report
+              <Link href="/dashboard" className="dm-sans-ui whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
+                Dashboard
               </Link>
             </div>
           </div>

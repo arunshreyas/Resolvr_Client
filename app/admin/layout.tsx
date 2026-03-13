@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BGPattern } from "@/components/ui/bg-pattern";
+import { UserButton } from "@clerk/nextjs";
 
 const navItems = [
   { icon: "analytics", label: "Intelligence", href: "/admin" },
@@ -102,21 +104,10 @@ export default function AdminLayout({
           </ul>
         </nav>
 
-        <div className="p-10 border-t border-white/5 relative z-10">
-          <Link
-            href="/admin/core-config"
-            className={`flex items-center gap-4 w-full rounded-2xl px-6 py-4 transition-colors ${
-              pathname === "/admin/core-config"
-                ? "bg-white/10 text-white"
-                : "text-white/40 hover:bg-white/5 hover:text-white"
-            }`}
-          >
-            <span className="material-symbols-outlined">settings</span>
-            <span className="dm-sans-ui text-sm font-medium">Core Config</span>
-          </Link>
+        <div className="p-10 border-t border-white/5 relative z-10 flex justify-center">
           <Link
             href="/admin/registry"
-            className="dm-sans-ui mt-6 block w-full rounded-[20px] bg-primary/20 px-6 py-4 text-center text-sm font-medium text-white transition-all hover:bg-primary"
+            className="dm-sans-ui block w-full rounded-[20px] bg-primary/20 px-6 py-4 text-center text-sm font-medium text-white transition-all hover:bg-primary"
           >
             Export Insights
           </Link>
@@ -141,21 +132,38 @@ export default function AdminLayout({
               </span>
             </div>
             <div className="flex items-center gap-6 pl-10 border-l border-slate-100">
-              <div className="text-right hidden sm:block">
-                <p className="dm-sans-ui text-sm font-medium text-slate-900">
-                  Admin Account
-                </p>
-                <p className="dm-sans-ui text-xs font-medium text-primary">
-                  Level-4 Executive
-                </p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-slate-900 overflow-hidden border-4 border-white shadow-xl flex items-center justify-center font-black text-primary text-xl italic">
-                NS
-              </div>
+               <Link
+                 href="/dashboard/settings"
+                 aria-label="Open local settings"
+                 className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 transition-all hover:bg-slate-100 hover:text-primary"
+               >
+                 <span className="material-symbols-outlined text-[22px]">
+                   computer
+                 </span>
+               </Link>
+               <UserButton
+                 appearance={{
+                   elements: {
+                     userButtonAvatarBox: "w-12 h-12 rounded-2xl",
+                     userButtonTrigger: "focus:shadow-none focus:outline-none"
+                   }
+                 }}
+               />
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto bg-slate-50/50">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-slate-50/50 relative">
+          <BGPattern
+            variant="grid"
+            mask="fade-bottom"
+            size={45}
+            fill="rgba(132,147,74,0.15)"
+            className="pointer-events-none absolute inset-0 z-0"
+          />
+          <div className="relative z-10">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

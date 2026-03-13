@@ -41,16 +41,20 @@ function SettingToggle({
       </div>
       <button
         type="button"
+        role="switch"
+        aria-checked={checked}
         aria-pressed={checked}
         onClick={() => onChange(!checked)}
-        className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${
-          checked ? "bg-primary" : "bg-slate-300"
+        className={`group flex h-8 w-14 shrink-0 items-center rounded-full px-1 transition-all duration-300 ease-out ${
+          checked
+            ? "justify-end bg-primary shadow-inner shadow-primary/30"
+            : "justify-start bg-slate-300"
         }`}
       >
         <span
-          className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-sm transition-transform ${
-            checked ? "translate-x-7" : "translate-x-1"
-          }`}
+          className={`h-6 w-6 rounded-full bg-white shadow-sm transition-all duration-300 ease-out ${
+            checked ? "scale-100" : "scale-95"
+          } group-active:scale-90`}
         ></span>
       </button>
     </div>
@@ -298,12 +302,6 @@ export default function DashboardSettingsPage() {
             </p>
 
             <div className="mt-8 space-y-4">
-              <div className="rounded-[28px] bg-white/8 px-5 py-4">
-                <p className="dm-sans-ui text-xs font-medium text-white/45">
-                  Auth provider
-                </p>
-                <p className="mt-2 text-lg font-black">Clerk</p>
-              </div>
               <div className="rounded-[28px] bg-white/8 px-5 py-4">
                 <p className="dm-sans-ui text-xs font-medium text-white/45">
                   Synced email

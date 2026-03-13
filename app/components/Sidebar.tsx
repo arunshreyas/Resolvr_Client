@@ -13,9 +13,8 @@ export default function Sidebar() {
   const menuItems = [
     { icon: "dashboard", label: "Dashboard", href: "/dashboard" },
     { icon: "description", label: "Complaints", href: "/dashboard/complaints" },
+    { icon: "forum", label: "Feedback", href: "/dashboard/feedback" },
     { icon: "map", label: "Map", href: "/dashboard/map" },
-    { icon: "add_circle", label: "Submit", href: "/dashboard/submit" },
-    { icon: "settings", label: "Settings", href: "/dashboard/settings" },
   ];
 
   return (
@@ -77,43 +76,7 @@ export default function Sidebar() {
         </ul>
       </nav>
 
-      <div className={`border-t border-white/5 relative z-10 transition-all duration-300 ${isExpanded ? "p-8" : "p-6"}`}>
-        <div
-          className={`flex items-center rounded-2xl bg-white/5 border border-white/5 shadow-inner transition-all duration-300 ${
-            isExpanded
-              ? "justify-start gap-4 p-4"
-              : "justify-center gap-0 p-0"
-          }`}
-        >
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center font-black text-white shadow-lg shadow-primary/20 overflow-hidden">
-            {user?.imageUrl ? (
-              <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              user?.firstName?.charAt(0) || "U"
-            )}
-          </div>
-          <div
-            className={`overflow-hidden transition-all duration-300 flex-grow min-w-0 ${
-              isExpanded ? "max-w-40 opacity-100" : "max-w-0 opacity-0"
-            }`}
-          >
-            <p className="dm-sans-ui text-sm font-medium text-white truncate">
-              {user?.fullName || "Your profile"}
-            </p>
-            <p className="dm-sans-ui text-xs font-medium text-white/55 truncate">
-              {user?.primaryEmailAddress?.emailAddress || "Signed in"}
-            </p>
-          </div>
-          <Link
-            href="/dashboard/settings"
-            className={`material-symbols-outlined text-sm cursor-pointer text-white/20 hover:text-white overflow-hidden transition-all duration-300 ${
-              isExpanded ? "max-w-10 opacity-100" : "max-w-0 opacity-0"
-            }`}
-          >
-            settings
-          </Link>
-        </div>
-      </div>
+
     </aside>
   );
 }

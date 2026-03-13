@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 import PageTransition from "./components/PageTransition";
+import { BGPattern } from "@/components/ui/bg-pattern";
 
 export default function RootLayout({
   children,
@@ -17,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -40,6 +41,13 @@ export default function RootLayout({
         <ClerkProvider>
           <ThemeProvider>
             <PageTransition>
+              <BGPattern
+                variant="grid"
+                mask="none"
+                size={40}
+                fill="rgba(132,147,74,0.12)"
+                className="pointer-events-none fixed inset-0 z-[-1]"
+              />
               {children}
             </PageTransition>
           </ThemeProvider>

@@ -291,6 +291,12 @@ export default function ComplaintDetailPage() {
                 Open map view
               </Link>
               <Link
+                href={`/dashboard/complaint/${complaint.id}/feedback`}
+                className="dm-sans-ui rounded-[24px] border border-primary/10 bg-primary/10 px-5 py-4 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
+              >
+                Dispute this update
+              </Link>
+              <Link
                 href="/dashboard/submit"
                 className="dm-sans-ui rounded-[24px] bg-primary px-5 py-4 text-sm font-medium text-white shadow-lg shadow-primary/20"
               >
