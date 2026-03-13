@@ -59,6 +59,7 @@ export default function SubmitComplaint() {
           userId: 1, // Mapped to backend schema
           latitude: latitude || null,
           longitude: longitude || null,
+          userEmail: user?.primaryEmailAddress?.emailAddress,
         })
       });
 
