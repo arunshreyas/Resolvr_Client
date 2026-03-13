@@ -1,4 +1,5 @@
 import Sidebar from "../components/Sidebar";
+import Link from "next/link";
 
 export default function DashboardLayout({
   children,
@@ -24,9 +25,9 @@ export default function DashboardLayout({
                  <span className="material-symbols-outlined group-hover:scale-110 transition-transform">notifications</span>
                  <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                </button>
-               <button className="bg-primary text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">
-                 Report New Issue
-               </button>
+                <Link href="/dashboard/submit" className="bg-primary text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center justify-center">
+                  Report New Issue
+                </Link>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200 cursor-pointer transition-colors">
               <span className="material-symbols-outlined">help</span>

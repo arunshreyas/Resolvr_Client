@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from '@clerk/nextjs';
+import UserSync from './components/UserSync';
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,7 +30,10 @@ export default function RootLayout({
         ` }} />
       </head>
       <body className="antialiased">
-        {children}
+        <ClerkProvider>
+          <UserSync />
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );

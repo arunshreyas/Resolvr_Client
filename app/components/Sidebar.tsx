@@ -1,11 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
 export default function Sidebar() {
+  const { user } = useUser();
+
   const menuItems = [
     { icon: "dashboard", label: "Dashboard", href: "/dashboard", active: true },
-    { icon: "description", label: "My Complaints", href: "/dashboard/complaints" },
-    { icon: "map", label: "Ward Map", href: "/dashboard/map" },
-    { icon: "notifications", label: "Updates", href: "/dashboard/updates" },
+    { icon: "description", label: "My Complaints", href: "/dashboard" }, // Pointing to main for now
+    { icon: "map", label: "Ward Map", href: "/dashboard" },
+    { icon: "notifications", label: "Updates", href: "/dashboard" },
   ];
 
   return (
@@ -15,8 +20,8 @@ export default function Sidebar() {
       
       <div className="p-10 mb-8 relative z-10">
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-3xl text-primary">location_city</span>
-          <span className="text-xl font-black tracking-tighter uppercase italic text-slate-900">Resolvr.</span>
+          <span className="material-symbols-outlined text-3xl text-white">location_city</span>
+          <span className="text-xl font-black tracking-tighter uppercase italic text-white">Resolvr.</span>
         </div>
       </div>
 
@@ -30,7 +35,7 @@ export default function Sidebar() {
                   item.active ? "bg-white/10 shadow-lg text-white" : "text-white/40 hover:text-white hover:bg-white/5"
                 }`}
               >
-                <span className={`material-symbols-outlined ${item.active ? 'text-primary' : 'group-hover:text-white'}`}>
+                <span className={`material-symbols-outlined ${item.active ? 'text-white' : 'group-hover:text-white'}`}>
                   {item.icon}
                 </span>
                 <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${item.active ? 'text-white' : 'group-hover:text-white'}`}>
@@ -44,17 +49,24 @@ export default function Sidebar() {
 
       <div className="p-8 border-t border-white/5 relative z-10">
         <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 shadow-inner">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center font-black text-white shadow-lg shadow-primary/20">
-            JD
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center font-black text-white shadow-lg shadow-primary/20 overflow-hidden">
+            {user?.imageUrl ? (
+              <img src={user.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              user?.firstName?.charAt(0) || "U"
+            )}
           </div>
           <div className="flex-grow min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white truncate">Jayanth Das</p>
-            <p className="text-[8px] font-bold uppercase tracking-widest text-white/40 truncate">Indiranagar Ward</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-white truncate">
+              {user?.fullName || "Resolvr User"}
+            </p>
+            <p className="text-[8px] font-bold uppercase tracking-widest text-white/40 truncate">
+              {user?.primaryEmailAddress?.emailAddress || "Active Node"}
+            </p>
           </div>
-          <span className="material-symbols-outlined text-sm cursor-pointer text-white/20 hover:text-white transition-colors">settings</span>
+          <Link href="/dashboard" className="material-symbols-outlined text-sm cursor-pointer text-white/20 hover:text-white transition-colors">settings</Link>
         </div>
       </div>
     </aside>
   );
 }
-

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function CitizenDashboard() {
   const stats = [
     { label: "Total Filed", value: "12", icon: "assignment", color: "bg-slate-900", tag: "Overall" },
@@ -122,9 +124,11 @@ export default function CitizenDashboard() {
                      </div>
                   </td>
                   <td className="px-12 py-10 text-right">
-                    <button className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-900 hover:text-white flex items-center justify-center mx-auto">
-                      <span className="material-symbols-outlined text-sm">visibility</span>
-                    </button>
+                    <Link href={`/dashboard/complaint/${c.id}`}>
+                      <button className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-900 hover:text-white flex items-center justify-center mx-auto">
+                        <span className="material-symbols-outlined text-sm">visibility</span>
+                      </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

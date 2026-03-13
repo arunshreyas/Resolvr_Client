@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -31,15 +32,15 @@ export default function Home() {
               </div>
 
               <div className="flex flex-wrap gap-5">
-                <button className="group relative bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-3 overflow-hidden">
+                <Link href="/dashboard/submit" className="group relative bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-3 overflow-hidden">
                   <span className="relative z-10">Report an Issue</span>
                   <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">add_circle</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/0 opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                </button>
-                <button className="bg-white/80 backdrop-blur-md hover:bg-white text-slate-900 border border-slate-200/50 px-10 py-5 rounded-2xl text-lg font-bold shadow-xl shadow-slate-200/20 flex items-center gap-3 transition-all">
+                </Link>
+                <Link href="/dashboard" className="bg-white/80 backdrop-blur-md hover:bg-white text-slate-900 border border-slate-200/50 px-10 py-5 rounded-2xl text-lg font-bold shadow-xl shadow-slate-200/20 flex items-center gap-3 transition-all">
                   <span className="material-symbols-outlined">track_changes</span>
                   Track Complaint
-                </button>
+                </Link>
               </div>
             </div>
             
@@ -114,7 +115,7 @@ export default function Home() {
                 { title: "Verified", label: "Ward Presence" }
               ].map((stat, i) => (
                 <div key={i} className="text-center group">
-                  <span className="block text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter uppercase italic transition-transform group-hover:scale-110 duration-500">
+                  <span className="block text-center text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter uppercase italic transition-transform group-hover:scale-110 duration-500">
                     {stat.title}
                   </span>
                   <div className="w-12 h-1 bg-primary mx-auto mb-6 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500"></div>

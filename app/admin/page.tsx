@@ -149,6 +149,50 @@ export default function AdminDashboard() {
               </div>
           </div>
       </div>
+
+      {/* Alert Management & System Logs */}
+      <div className="grid lg:grid-cols-2 gap-12">
+          <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-2xl shadow-slate-200/20">
+              <h3 className="text-2xl font-black tracking-tighter uppercase italic mb-10 border-l-4 border-red-500 pl-4">Critical Vectors</h3>
+              <div className="space-y-6">
+                  {[
+                      { id: "SYS-A91", msg: "Water pressure drop detected in Indiranagar Sector B", type: "Infrastructure", time: "2m ago" },
+                      { id: "SYS-A92", msg: "Power grid instability reported near Whitefield Metro", type: "Utility", time: "15m ago" },
+                      { id: "SYS-A93", msg: "Unusual garbage pileup pattern in Ward 80", type: "Sanitation", time: "1h ago" },
+                  ].map(alert => (
+                      <div key={alert.id} className="p-6 bg-red-50/50 rounded-3xl border border-red-100 flex items-start gap-4 group hover:bg-red-50 transition-colors">
+                          <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20 animate-pulse">
+                              <span className="material-symbols-outlined text-sm">warning</span>
+                          </div>
+                          <div>
+                              <div className="flex items-center gap-3 mb-1">
+                                  <span className="text-[8px] font-black uppercase tracking-widest text-red-500">{alert.type}</span>
+                                  <span className="text-[8px] font-bold text-slate-300">|</span>
+                                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">{alert.id}</span>
+                              </div>
+                              <p className="text-xs font-black text-slate-900 leading-tight mb-2 underline whitespace-pre-wrap">{alert.msg}</p>
+                              <span className="text-[8px] font-bold text-slate-400">{alert.time}</span>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+
+          <div className="bg-slate-900 p-12 rounded-[56px] text-white relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-[0.05] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]"></div>
+              <h3 className="text-2xl font-black tracking-tighter uppercase italic mb-10 text-glow">System Logs</h3>
+              <div className="font-mono text-[9px] space-y-3 opacity-60">
+                  <p className="text-primary">&gt; Neural_Routing_v2.4.1 initialized.</p>
+                  <p>&gt; Syncing 14.2k active nodes across 198 wards.</p>
+                  <p>&gt; BBMP_SWM_Relay: Connection stable (9ms latency).</p>
+                  <p className="text-amber-400">&gt; Warning: High volume detected in Zone-7 (Eastern Corridor).</p>
+                  <p>&gt; AI_Classifier: Batch processing 450 new complaint vectors.</p>
+                  <p className="text-primary">&gt; Status: All systems nominal.</p>
+                  <div className="w-1 h-3 bg-primary animate-pulse inline-block align-middle ml-1"></div>
+              </div>
+              <button className="mt-12 w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Download Full Audit Trail</button>
+          </div>
+      </div>
     </div>
   );
 }
