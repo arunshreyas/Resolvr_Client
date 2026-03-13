@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CivicPulse Bengaluru - Admin Complaint Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#84934A",
+                        "nav-bg": "#656D3F",
+                        "background-light": "#ECECEC",
+                        "background-dark": "#1b1c16",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Navigation -->
+<header class="bg-nav-bg text-white px-6 md:px-10 py-3 flex items-center justify-between shadow-md">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="bg-white/20 p-2 rounded-lg">
+<span class="material-symbols-outlined text-white">account_balance</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight">CivicPulse Bengaluru</h2>
+</div>
+<div class="hidden md:flex items-center gap-6 text-white/80 text-sm font-medium">
+<a class="hover:text-white transition-colors" href="#">Dashboard</a>
+<a class="text-white border-b-2 border-white pb-1" href="#">Complaints</a>
+<a class="hover:text-white transition-colors" href="#">Wards</a>
+<a class="hover:text-white transition-colors" href="#">Departments</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<label class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/60 text-sm">search</span>
+<input class="bg-white/10 border-none rounded-lg pl-10 pr-4 py-2 text-sm placeholder:text-white/60 focus:ring-2 focus:ring-primary w-64" placeholder="Search ID or Ward..." type="text"/>
+</label>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary/40 border-2 border-white/20 overflow-hidden" data-alt="Admin user profile picture portrait">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVHL3Q1Q62f9P6a1fFUGzBAL1RVQFyNHChMW9kxB24Gj7OJjpG6nQm3PTYSpAFAoZtrr4ObNi-BLYcNpkIpZzDEzIoJSqo40szKLmjUdPz_7l2R_95hrv3e4osRwEu8Yl4oee8rVwP9u9LvP3qB5HTjwVl6mTCJLeEq53W20sx6sYDl4YC08UITe5ItYECucf63V7bZ5Un-9adCdg8wIRZ3xez9Jy42wJaHtcCfrSsKkxJzRlsalYjDyoDfE5xILlNLEA7o2XaqJc"/>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full p-6 md:p-10 space-y-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex text-sm text-slate-500 mb-2 gap-2">
+<span>Admin</span>
+<span>/</span>
+<span class="text-primary font-medium">Complaint Management</span>
+</nav>
+<h1 class="text-4xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Active Complaints</h1>
+<p class="text-slate-600 dark:text-slate-400 mt-1">Manage and monitor civic infrastructure issues across all 243 wards.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-bold text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+                    Export CSV
+                </button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add</span>
+                    New Report
+                </button>
+</div>
+</div>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-lg">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="text-green-600 text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> 5%
+                    </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Pending</p>
+<p class="text-3xl font-black text-slate-900 dark:text-slate-100">124</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary/10 text-primary rounded-lg">
+<span class="material-symbols-outlined">task_alt</span>
+</div>
+<span class="text-red-600 text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_down</span> 2%
+                    </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Resolved Today</p>
+<p class="text-3xl font-black text-slate-900 dark:text-slate-100">42</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-lg">
+<span class="material-symbols-outlined">priority_high</span>
+</div>
+<span class="text-green-600 text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> 10%
+                    </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Escalated</p>
+<p class="text-3xl font-black text-slate-900 dark:text-slate-100">15</p>
+</div>
+<div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
+<span class="material-symbols-outlined">timer</span>
+</div>
+<span class="text-green-600 text-sm font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">keyboard_arrow_down</span> 0.5d
+                    </span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Avg. Resolution Time</p>
+<p class="text-3xl font-black text-slate-900 dark:text-slate-100">3.2d</p>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+<!-- Table Tabs/Filters -->
+<div class="px-6 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-4">
+<div class="flex gap-8 overflow-x-auto no-scrollbar">
+<button class="py-4 border-b-2 border-primary text-primary font-bold text-sm whitespace-nowrap">All Complaints</button>
+<button class="py-4 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 font-bold text-sm whitespace-nowrap transition-colors">Water Supply</button>
+<button class="py-4 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 font-bold text-sm whitespace-nowrap transition-colors">Roads &amp; Potholes</button>
+<button class="py-4 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 font-bold text-sm whitespace-nowrap transition-colors">Waste Management</button>
+<button class="py-4 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 font-bold text-sm whitespace-nowrap transition-colors">Street Lights</button>
+</div>
+<div class="flex items-center gap-2 py-2">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+<span class="material-symbols-outlined">sort</span>
+</button>
+</div>
+</div>
+<!-- Table View -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 uppercase text-xs font-bold tracking-wider">
+<th class="px-6 py-4">ID</th>
+<th class="px-6 py-4">Category</th>
+<th class="px-6 py-4">Ward</th>
+<th class="px-6 py-4">Date Reported</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4">Assigned Dept</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
+<td class="px-6 py-4 font-bold text-slate-900 dark:text-slate-100 text-sm">#BLR-4592</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">water_drop</span>
+<span class="text-sm">Main Line Leakage</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Indiranagar (Ward 80)</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">Oct 24, 2023</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-orange-100 text-orange-700 border border-orange-200">Pending</span>
+</td>
+<td class="px-6 py-4 text-sm">BWSSB</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors" title="Resolve">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</button>
+<button class="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Escalate">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
+<td class="px-6 py-4 font-bold text-slate-900 dark:text-slate-100 text-sm">#BLR-4595</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">construction</span>
+<span class="text-sm">Deep Pothole</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Koramangala (Ward 151)</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">Oct 24, 2023</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-blue-100 text-blue-700 border border-blue-200">Processing</span>
+</td>
+<td class="px-6 py-4 text-sm">BBMP Roads</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors" title="Resolve">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</button>
+<button class="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Escalate">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
+<td class="px-6 py-4 font-bold text-slate-900 dark:text-slate-100 text-sm">#BLR-4581</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">delete</span>
+<span class="text-sm">Uncollected Garbage</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Jayanagar (Ward 153)</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">Oct 23, 2023</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-red-100 text-red-700 border border-red-200">High Alert</span>
+</td>
+<td class="px-6 py-4 text-sm">Solid Waste Management</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors" title="Resolve">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</button>
+<button class="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Escalate">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors">
+<td class="px-6 py-4 font-bold text-slate-900 dark:text-slate-100 text-sm">#BLR-4570</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">lightbulb</span>
+<span class="text-sm">Dead Street Lights</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm">Malleshwaram (Ward 65)</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">Oct 22, 2023</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-green-100 text-green-700 border border-green-200">Resolved</span>
+</td>
+<td class="px-6 py-4 text-sm">BESCOM</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-1.5 bg-slate-100 text-slate-400 cursor-not-allowed rounded-lg" disabled="">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</button>
+<button class="p-1.5 bg-slate-100 text-slate-400 cursor-not-allowed rounded-lg" disabled="">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer/Pagination -->
+<div class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Showing 1 to 4 of 124 results</p>
+<div class="flex items-center gap-1">
+<button class="p-2 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm leading-none">chevron_left</span>
+</button>
+<button class="px-3.5 py-2 bg-primary text-white rounded-lg text-sm font-bold">1</button>
+<button class="px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-bold">2</button>
+<button class="px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-bold">3</button>
+<span class="px-2">...</span>
+<button class="px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-bold">31</button>
+<button class="p-2 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-sm leading-none">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Secondary Layout: Ward Performance Cards -->
+<div class="space-y-4">
+<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100">Ward Performance Overview</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-slate-800 p-5 rounded-xl border-l-4 border-primary shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-bold">Indiranagar</h4>
+<span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-bold">Efficiency: 92%</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Active Issues</span>
+<span class="font-bold">12</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full w-[92%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-5 rounded-xl border-l-4 border-orange-400 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-bold">Koramangala</h4>
+<span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-bold">Efficiency: 78%</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Active Issues</span>
+<span class="font-bold">28</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2">
+<div class="bg-orange-400 h-2 rounded-full w-[78%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800 p-5 rounded-xl border-l-4 border-red-400 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-bold">Whitefield</h4>
+<span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-bold">Efficiency: 64%</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Active Issues</span>
+<span class="font-bold">41</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2">
+<div class="bg-red-400 h-2 rounded-full w-[64%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-auto px-10 py-6 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+<p>© 2024 CivicPulse Bengaluru. All municipal rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Department Access</a>
+<a class="hover:text-primary transition-colors" href="#">Support Portal</a>
+</div>
+</footer>
+</div>
+</body></html>

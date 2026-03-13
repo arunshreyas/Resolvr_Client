@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#84934A",
+                        "nav-bg": "#656D3F",
+                        "background-light": "#ECECEC",
+                        "background-dark": "#1b1c16",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 bg-nav-bg text-white hidden md:flex flex-col shadow-xl">
+<div class="p-6 flex items-center gap-3">
+<div class="p-2 bg-white/20 rounded-lg">
+<span class="material-symbols-outlined text-white">account_balance</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">CivicPulse</h1>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-lg text-white" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-white/80 transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>My Complaints</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-white/80 transition-colors" href="#">
+<span class="material-symbols-outlined">map</span>
+<span>Ward Map</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-lg text-white/80 transition-colors" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span>Updates</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/10">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-primary/40 flex items-center justify-center text-xs font-bold" data-alt="User profile avatar placeholder">JD</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold truncate">Jayanth Das</p>
+<p class="text-xs text-white/60 truncate">Indiranagar Ward</p>
+</div>
+<span class="material-symbols-outlined text-sm text-white/60">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto">
+<!-- Top Navbar -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-8 flex items-center justify-between sticky top-0 z-10">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/50 transition-all" placeholder="Search complaints, wards, or resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-all shadow-sm">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Submit New Complaint
+                    </button>
+<div class="h-8 w-px bg-slate-200 dark:bg-slate-800 mx-2"></div>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<div class="p-8">
+<!-- Page Header -->
+<div class="mb-8">
+<h2 class="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Citizen Dashboard</h2>
+<p class="text-slate-600 dark:text-slate-400 mt-1">Welcome back. You have 3 complaints currently in progress.</p>
+</div>
+<!-- Metrics Overview -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-slate-400">inventory_2</span>
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Overall</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Total Filed</p>
+<p class="text-3xl font-bold mt-1">12</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-blue-500">pending</span>
+<span class="text-xs font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded">+1 new</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">In Progress</p>
+<p class="text-3xl font-bold mt-1 text-blue-600">3</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-green-500">check_circle</span>
+<span class="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded">85% fix rate</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Resolved</p>
+<p class="text-3xl font-bold mt-1 text-green-600">8</p>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-red-500">error</span>
+<span class="text-xs font-bold text-red-500 bg-red-500/10 px-2 py-1 rounded">Attention</span>
+</div>
+<p class="text-slate-500 text-sm font-medium">Escalated</p>
+<p class="text-3xl font-bold mt-1 text-red-600">1</p>
+</div>
+</div>
+<!-- Complaints Section -->
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        My Recent Complaints
+                        <span class="text-sm font-normal text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">Active</span>
+</h3>
+<div class="flex items-center gap-2">
+<button class="text-sm font-medium text-slate-600 hover:text-primary flex items-center gap-1 px-3 py-1 bg-white border border-slate-200 rounded-lg">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                            Filter
+                        </button>
+<button class="text-sm font-medium text-slate-600 hover:text-primary flex items-center gap-1 px-3 py-1 bg-white border border-slate-200 rounded-lg">
+<span class="material-symbols-outlined text-sm">sort</span>
+                            Newest
+                        </button>
+</div>
+</div>
+<!-- Complaints List -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Complaint Card 1 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden group hover:border-primary/50 transition-all">
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                    Sanitation
+                                </div>
+<span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-blue-700 rounded-full"></span>
+                                    In Progress
+                                </span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">Garbage Pile near Indiranagar Park</h4>
+<p class="text-slate-500 text-sm mt-2 line-clamp-2">Illegal dumping has been observed for over a week. The smell is becoming unbearable for residents nearby.</p>
+<div class="mt-6 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center gap-4 text-xs text-slate-400 font-medium">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                                        Oct 24, 2023
+                                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        Ward 80
+                                    </span>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1">
+                                    Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Complaint Card 2 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden group hover:border-primary/50 transition-all">
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                    Roads &amp; Infra
+                                </div>
+<span class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-red-700 rounded-full"></span>
+                                    Escalated
+                                </span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">Deep Pothole at 100ft Road Intersection</h4>
+<p class="text-slate-500 text-sm mt-2 line-clamp-2">Large pothole causing traffic congestion and safety hazards for two-wheelers. Reported multiple times.</p>
+<div class="mt-6 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center gap-4 text-xs text-slate-400 font-medium">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                                        Oct 18, 2023
+                                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        Ward 80
+                                    </span>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1">
+                                    Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Complaint Card 3 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden group hover:border-primary/50 transition-all">
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                    Street Lights
+                                </div>
+<span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-yellow-700 rounded-full"></span>
+                                    Open
+                                </span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">Broken Street Light - 4th Cross</h4>
+<p class="text-slate-500 text-sm mt-2 line-clamp-2">The street light pole near the bakery is flickering and mostly dark. Security concern at night.</p>
+<div class="mt-6 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center gap-4 text-xs text-slate-400 font-medium">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                                        Oct 26, 2023
+                                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        Ward 80
+                                    </span>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1">
+                                    Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Complaint Card 4 -->
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden group hover:border-primary/50 transition-all">
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                    Water Supply
+                                </div>
+<span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-green-700 rounded-full"></span>
+                                    Resolved
+                                </span>
+</div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">Low Water Pressure Issue</h4>
+<p class="text-slate-500 text-sm mt-2 line-clamp-2">Residents of 2nd main were facing low water pressure. BWSSB team inspected and fixed a valve blockage.</p>
+<div class="mt-6 pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center gap-4 text-xs text-slate-400 font-medium">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                                        Oct 10, 2023
+                                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        Ward 80
+                                    </span>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-1">
+                                    Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Stats -->
+<div class="mt-12 p-8 rounded-2xl bg-gradient-to-r from-nav-bg to-primary text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg shadow-primary/20">
+<div>
+<h5 class="text-2xl font-bold">Making Bengaluru Better</h5>
+<p class="text-white/80 max-w-md">Your active participation helps local authorities prioritize and resolve issues faster. Thank you for being an active citizen!</p>
+</div>
+<div class="flex gap-4">
+<div class="text-center px-6 border-r border-white/20">
+<p class="text-3xl font-black">2.4k</p>
+<p class="text-xs uppercase font-bold text-white/60">Ward Issues Solved</p>
+</div>
+<div class="text-center px-6">
+<p class="text-3xl font-black">12h</p>
+<p class="text-xs uppercase font-bold text-white/60">Avg Response Time</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

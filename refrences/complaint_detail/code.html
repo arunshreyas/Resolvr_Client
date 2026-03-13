@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#839249",
+                        "background-light": "#ECECEC",
+                        "background-dark": "#1b1c16",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>Complaint Detail | CivicPulse Bengaluru</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 md:px-40 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">CivicPulse Bengaluru</h2>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-lg h-10 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 hover:bg-slate-300 transition-colors">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 hover:bg-slate-300 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8 px-4 md:px-40">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1 gap-6">
+<!-- Title Section -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex flex-wrap justify-between items-start gap-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="text-primary font-bold text-sm tracking-widest uppercase">Complaint #88241</span>
+<span class="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-bold">RESOLVED</span>
+</div>
+<h1 class="text-slate-900 dark:text-slate-100 text-3xl font-bold leading-tight">Pothole repair on 12th Main Road, Indiranagar</h1>
+</div>
+</div>
+<div class="mt-4 flex flex-wrap gap-3">
+<div class="flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-1.5 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-sm">smart_toy</span>
+<p class="text-primary text-sm font-semibold leading-normal">Roads &amp; Infrastructure Department</p>
+</div>
+<div class="flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 px-3 py-1.5">
+<span class="material-symbols-outlined text-slate-500 text-sm">calendar_today</span>
+<p class="text-slate-600 dark:text-slate-400 text-sm font-medium leading-normal">Logged 12 Oct, 2023</p>
+</div>
+</div>
+<div class="mt-6 border-t border-slate-100 dark:border-slate-800 pt-4">
+<h4 class="text-slate-900 dark:text-slate-100 font-bold mb-2">Description</h4>
+<p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed">
+                                Large pothole near the metro pillar causing traffic congestion and safety hazards for two-wheelers. The depth of the pothole is approximately 5 inches and it expands after every rainfall.
+                            </p>
+</div>
+</div>
+<!-- Timeline Section -->
+<div class="flex flex-col gap-4">
+<h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold px-1">Status Timeline</h3>
+<div class="relative space-y-4">
+<!-- Timeline Line -->
+<div class="absolute left-8 top-0 bottom-0 w-0.5 bg-slate-300 dark:bg-slate-700"></div>
+<!-- Timeline Item 1 (Most Recent) -->
+<div class="relative flex gap-6 items-start group">
+<div class="z-10 flex size-16 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-lg ring-4 ring-white dark:ring-slate-900">
+<span class="material-symbols-outlined">task_alt</span>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-slate-900 dark:text-slate-100 font-bold">Complaint Resolved</h4>
+<span class="text-slate-500 text-xs">Oct 18, 14:30</span>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm mb-4">The pothole has been filled and leveled with industrial-grade bitumen. Traffic flow has returned to normal.</p>
+<div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border-l-4 border-primary">
+<p class="text-xs font-bold text-primary uppercase mb-1">Resolution Note</p>
+<p class="text-slate-700 dark:text-slate-300 text-sm italic">"Permanent fix applied using hot-mix asphalt. Area monitored for 24 hours to ensure quality. Verified by Junior Engineer R. Kumar."</p>
+</div>
+<div class="mt-4 flex gap-4">
+<div class="relative h-24 w-32 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+<img class="h-full w-full object-cover" data-alt="Repaired road surface with fresh asphalt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKK9MSiJRP53P73LL3Bk8VHJYVuutqwhOtcHd3LSKtthC4cqGddJ8uFjOlxirZVYdQItEyI0SvQ6GUTjLXvQza1WIxJF9Lfx-wNAC0-NPysxfY_DwmUoLhSP_AXDsO467L2vToxCV4OoRhJBTGcoZay3SdHc5uBuDpgeDA91iq-PXyu6gct1qMQSsYgY21Vk8cr8TfzRKzFYME9LCX8K9Jrh1TwCy1pHsrElh2GzbxnBvrWB4fGh4eJvDDX7OD5YShtuN1kzGL0NQ"/>
+</div>
+<div class="relative h-24 w-32 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+<img class="h-full w-full object-cover" data-alt="Worker finishing road repair work" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPKNqczEh0lAgOhWHLKc8bVomj1r99APm1BmROJfCdlAOBenDXi-fDPeEyFgqUUi3pDYWqu9AIYf4a6ykwVZTRQTw5bvHZsfL9EdeDFjYJfGNRsiajcP2OymWHD00dDXGzlQ4HC5PGmtrFxXaa0K1l_RRCeViF1VeaZGATE4CQllCGardQz31Yu4WrPX9TjzX0AoYspVtA9UMxm7J_Xu75Srh-J9O6I5yO5Qcr4tzHN4xCQxnD61WxC6cznbGd4oT1YU98DS7v5LY"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative flex gap-6 items-start group">
+<div class="z-10 flex size-16 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 ring-4 ring-white dark:ring-slate-900">
+<span class="material-symbols-outlined">engineering</span>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm opacity-80">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-slate-900 dark:text-slate-100 font-bold">Work In Progress</h4>
+<span class="text-slate-500 text-xs">Oct 15, 09:15</span>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm">Contractor assigned and maintenance crew dispatched to the location. Preparation for asphalt pouring initiated.</p>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative flex gap-6 items-start group">
+<div class="z-10 flex size-16 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 ring-4 ring-white dark:ring-slate-900">
+<span class="material-symbols-outlined">visibility</span>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm opacity-80">
+<div class="flex justify-between items-start mb-2">
+<h4 class="text-slate-900 dark:text-slate-100 font-bold">Site Inspection Completed</h4>
+<span class="text-slate-500 text-xs">Oct 13, 11:45</span>
+</div>
+<p class="text-slate-600 dark:text-slate-400 text-sm">Inspection team verified the location. Pothole severity categorized as 'High Priority' due to proximity to metro pillar.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-300 dark:border-slate-700">
+<button class="flex-1 flex items-center justify-center gap-2 rounded-lg h-12 bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-md">
+<span class="material-symbols-outlined">star</span>
+                            Rate Resolution
+                        </button>
+<button class="flex-1 flex items-center justify-center gap-2 rounded-lg h-12 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined">history</span>
+                            Reopen Complaint
+                        </button>
+</div>
+<!-- Feedback Note -->
+<div class="mt-4 p-4 rounded-lg bg-primary/5 text-center">
+<p class="text-slate-500 text-xs">If the issue persists, you may reopen this complaint within 7 days of resolution.</p>
+</div>
+</div>
+</main>
+<!-- Map Placeholder / Side Info (Conceptual) -->
+<div class="hidden lg:block fixed right-10 top-32 w-80">
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm overflow-hidden">
+<h5 class="text-slate-900 dark:text-slate-100 font-bold mb-3 text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">location_on</span>
+                        Location Details
+                    </h5>
+<div class="h-48 w-full bg-slate-200 dark:bg-slate-800 rounded-lg mb-4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-slate-400 text-xs text-center px-4">Map View of 12th Main Road, Indiranagar</span>
+</div>
+<img class="w-full h-full object-cover opacity-50 grayscale" data-alt="Satellite map view of Bengaluru city streets" data-location="Bengaluru" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK7OG-7JiTjf6t2dSq0qwtUQkZKB3_MLuPz_a3-_EJnJGfAKZPbYaby0sRegEYpiPKX-JtKJYWrpqW0ULv0Dww3F8boytGwkEwLw6JHX9cBZX0fOoP_JLhXAB2hH2RT3ry6Czgqk1zFV2JVsb4X16JU9PAyNxLikQfzOoJGlxY-4KBTUGh4XWILRP59-_soD8SE-h_5ttszWtrh8GO9OYxnUQSE_vOYFNxQk3Ng53ro4uHCGY48dvWkrQ51BiXvSavg-5cY8QfhDg"/>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between text-xs">
+<span class="text-slate-500">Ward</span>
+<span class="text-slate-900 dark:text-slate-100 font-semibold">Ward 80, Indiranagar</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-slate-500">Constituency</span>
+<span class="text-slate-900 dark:text-slate-100 font-semibold">C.V. Raman Nagar</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>
