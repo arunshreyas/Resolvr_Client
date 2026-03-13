@@ -3,52 +3,65 @@ import Footer from "./components/Footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background-light selection:bg-primary/30">
       <Navbar />
       
       <main className="flex-grow">
         {/* Hero Section */}
-        <header className="relative overflow-hidden pt-16 pb-24 px-6 bg-background-light">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div className="flex flex-col gap-8">
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full w-fit border border-primary/20">
-                <span className="material-symbols-outlined text-sm">bolt</span>
-                <span className="text-xs font-bold uppercase tracking-wider">AI-Powered Governance</span>
+        <header className="relative overflow-hidden pt-24 pb-32 px-6">
+          {/* Background Blobs */}
+          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
+            <div className="flex flex-col gap-10">
+              <div className="inline-flex items-center gap-3 bg-white/40 backdrop-blur-md px-4 py-1.5 rounded-full w-fit border border-white/40 shadow-sm animate-fade-in">
+                <span className="material-symbols-outlined text-primary text-sm animate-pulse">bolt</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700">AI-Powered Governance</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black leading-[1.1] tracking-tight text-slate-900">
-                Fix Bengaluru <span className="text-primary">Together</span>
-              </h1>
-              <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg">
-                AI-powered civic issue resolution for a smarter, cleaner city. Empowering citizens to drive real change through instant reporting and automated routing.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <button className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-xl text-lg font-bold shadow-lg shadow-primary/20 flex items-center gap-2 transition-all hover:scale-105">
-                  <span className="material-symbols-outlined">add_circle</span>
-                  Report an Issue
+              
+              <div className="space-y-6">
+                <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter text-slate-900">
+                  Fix <br /> Bengaluru <br />
+                  <span className="text-primary italic">Together.</span>
+                </h1>
+                <p className="text-xl text-slate-600 leading-tight max-w-lg font-medium">
+                  Building a smarter, cleaner city through automated <span className="text-slate-900 font-bold">issue routing</span> and citizen empowerment.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-5">
+                <button className="group relative bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-3 overflow-hidden">
+                  <span className="relative z-10">Report an Issue</span>
+                  <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">add_circle</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/0 opacity-0 group-hover:opacity-20 transition-opacity"></div>
                 </button>
-                <button className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 px-8 py-4 rounded-xl text-lg font-bold shadow-sm flex items-center gap-2 transition-all hover:scale-105">
+                <button className="bg-white/80 backdrop-blur-md hover:bg-white text-slate-900 border border-slate-200/50 px-10 py-5 rounded-2xl text-lg font-bold shadow-xl shadow-slate-200/20 flex items-center gap-3 transition-all">
                   <span className="material-symbols-outlined">track_changes</span>
                   Track Complaint
                 </button>
               </div>
             </div>
-            <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl overflow-hidden border border-primary/10 relative">
+            
+            <div className="relative group">
+              <div className="relative aspect-[4/5] md:aspect-square bg-slate-200 rounded-[40px] overflow-hidden border border-white shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]">
                 <img 
-                  alt="Bengaluru city infrastructure" 
-                  className="object-cover w-full h-full opacity-90 mix-blend-multiply"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4Ho06Z5iTupRYcMd5fHiVmx0lUHVN1GQF5qDaFTOm0cqvuTL7MKacxz9Ru2gOhs8-ZsyuSj5WfuqQpo8Aweq67WRRK-_hJH1SztihlOAfH3cv6TTX9h3CVIffhiyyFx-AW5bs1ygnjg-EiFo5P8VDD6LVPcwz2C98DaCkk_lshzlTvnMFjI05WefkBpR_zx8O6PwoCoYtKfOZ4OROliwY3pg6-nWhc9XfWPK5LiL7evtg263uuHdBEWQs1ctJuWYAsE8G8swJiD8"
+                  alt="Bengaluru city landscape" 
+                  className="object-cover w-full h-full transform transition-transform duration-1000 group-hover:scale-110"
+                  src="/assets/bengaluru_hero.png"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background-light via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl max-w-xs border border-slate-100 hidden sm:block">
-                <div className="flex items-center gap-4">
-                  <div className="bg-primary/10 p-3 rounded-full text-primary">
-                    <span className="material-symbols-outlined">verified</span>
+              
+              {/* Floating Stat Card */}
+              <div className="absolute -bottom-10 -left-10 glass p-8 rounded-[32px] max-w-[280px] hidden md:block animate-float">
+                <div className="flex items-center gap-5">
+                  <div className="bg-primary p-4 rounded-2xl text-white shadow-lg shadow-primary/30">
+                    <span className="material-symbols-outlined text-3xl">verified</span>
                   </div>
                   <div>
-                    <p className="text-sm font-bold">12,400+ Issues Fixed</p>
-                    <p className="text-xs text-slate-500">Across 198 wards this month</p>
+                    <p className="text-3xl font-black text-slate-900">12.4k</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-800">Issues Resolved</p>
                   </div>
                 </div>
               </div>
@@ -56,74 +69,88 @@ export default function Home() {
           </div>
         </header>
 
-        {/* How it Works */}
-        <section className="py-24 px-6 bg-white/50" id="how-it-works">
+        {/* How it Works - Modernized */}
+        <section className="py-32 px-6 relative" id="how-it-works">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-black mb-4">Three Simple Steps</h2>
-              <p className="text-slate-600 max-w-2xl mx-auto text-lg">Our AI platform ensures your concerns reach the right BBMP department instantly without bureaucratic delays.</p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+              <div className="max-w-xl">
+                <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-6">Three <br /> Simple Steps</h2>
+                <p className="text-xl text-slate-500 font-medium">Bypassing bureaucracy with smart automation.</p>
+              </div>
+              <div className="hidden md:block h-px flex-grow bg-slate-200 mx-12 mb-6"></div>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
+            
+            <div className="grid lg:grid-cols-3 gap-12">
               {[
-                { step: "1", title: "Report", desc: "Snap a photo and describe the civic issue. Our app automatically captures GPS location and ward details.", icon: "photo_camera" },
-                { step: "2", title: "AI Routing", desc: "Our proprietary AI analyzes the image, categorizes the urgency, and routes it to the specific field engineer.", icon: "neurology" },
-                { step: "3", title: "Resolution", desc: "Track real-time progress on your dashboard. Receive a photo confirmation once the issue is marked resolved.", icon: "check_circle" }
-              ].map((item) => (
-                <div key={item.step} className="bg-white p-8 rounded-2xl border border-slate-100 hover:shadow-xl transition-all group hover:-translate-y-2">
-                  <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-3xl">{item.icon}</span>
+                { step: "01", title: "Report", desc: "Snap a photo of the issue. Our AI automatically extracts location, ward, and urgency metrics.", icon: "photo_camera" },
+                { step: "02", title: "AI Routing", desc: "Our neural engine categorizes and assigns the task to the relevant field department in milliseconds.", icon: "neurology" },
+                { step: "03", title: "Resolution", desc: "Follow real-time progress on your dashboard. Receive signed-off photo proof once resolved.", icon: "check_circle" }
+              ].map((item, i) => (
+                <div key={item.step} className="group relative">
+                  <div className="bg-white p-12 rounded-[40px] border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl transition-all duration-500 hover:-translate-y-4">
+                    <span className="text-8xl font-black text-slate-200 absolute -top-10 left-10 pointer-events-none group-hover:text-primary/20 transition-colors">
+                      {item.step}
+                    </span>
+                    <div className="bg-slate-50 w-20 h-20 rounded-3xl flex items-center justify-center text-slate-400 mb-10 group-hover:bg-primary group-hover:text-white group-hover:rotate-6 transition-all duration-500">
+                      <span className="material-symbols-outlined text-4xl">{item.icon}</span>
+                    </div>
+                    <h3 className="text-3xl font-black mb-4 text-slate-900">{item.title}</h3>
+                    <p className="text-slate-700 leading-relaxed font-medium">{item.desc}</p>
                   </div>
-                  <h3 className="text-xl font-bold mb-3">{item.step}. {item.title}</h3>
-                  <p className="text-slate-500 leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-20 px-6 bg-nav-bg text-white" id="stats">
+        {/* Stats Section - Premium Look */}
+        <section className="py-24 px-6 bg-slate-900 border-y border-white/5" id="stats">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-8">
               {[
-                { val: "98%", label: "Resolution Rate" },
-                { val: "45k+", label: "Issues Resolved" },
-                { val: "12", label: "Departments Joined" },
-                { val: "198", label: "Wards Covered" }
+                { title: "BBMP & BWSSB", label: "Multi-Agency Grid" },
+                { title: "100%", label: "Traceable History" },
+                { title: "Direct", label: "Citizen Oversight" },
+                { title: "Verified", label: "Ward Presence" }
               ].map((stat, i) => (
-                <div key={i} className="flex flex-col gap-2">
-                  <span className="text-4xl md:text-5xl font-black text-primary/30">{stat.val}</span>
-                  <p className="text-sm font-medium uppercase tracking-widest opacity-80">{stat.label}</p>
+                <div key={i} className="text-center group">
+                  <span className="block text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter uppercase italic transition-transform group-hover:scale-110 duration-500">
+                    {stat.title}
+                  </span>
+                  <div className="w-12 h-1 bg-primary mx-auto mb-6 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500"></div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50 group-hover:text-primary transition-colors">{stat.label}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="py-24 px-6 overflow-hidden" id="testimonials">
+        {/* Technology/Features Section */}
+        <section className="py-32 px-6 bg-slate-50" id="tech">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-black text-center mb-16">Voice of Citizens</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                { name: "Rajesh K.", role: "Indiranagar Resident", text: "Reported a broken streetlight in Indiranagar and it was fixed within 48 hours. The AI tracking is surprisingly accurate!", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAXb-V9a42-AnHeJiWmdNP-PRW8tdXby5CUSyQ33H7dJ3936qcEcaM55lPTorrRIo6_djIfSylM-D_jmF-njIRzdeTM-HVVEw1yuRgHBzlm098TWBlNBgHUKytMmPMe7uR7ycNV4dIsMa20AaAo6dCyvezChRTGT7WRwnjSdRXMVbKOADSbTinzMUt2sqOK2zLgfXddk_oxkqp_z6qt5_Q5fZG1CRLrrN5s--VQqwROx2GgkoVVzHip6Gmeb9rdM4U4U9gex-4FWUM" },
-                { name: "Ananya S.", role: "Whitefield Activist", text: "CivicPulse made it so easy to report illegal dumping near my house. No more running around offices to find who is responsible.", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCvwM4TbSQlNCizdGTuAQCioMODFCY1jKgD4XhVdyA681Xx8E-ffdR-uR1lRphelgszokq-HpiI1c28g_kR7hnmNbC8OF_w7Zq15LpAUIHg6aBsxMWgykAGFCfvP1hASWagynquqq0lbg0gGNRrGDd-mzgNEaK3Dt8L6Cwa2jn9ORpfY3b4SwguwYD7YOytJTByzlDS9TT-os6YARYjSG8iZ0Npv8_SFDAIWjxEMuEB27uq6rejoyUa5TZK-HVWXTzjk6Jb-HPqFgg" },
-                { name: "Vikram M.", role: "Jayanagar Ward Leader", text: "The transparency is what I love. You can see when the official visits the site. This is exactly what Bengaluru needed.", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAtQc0X7C-5Ohr_3diY0FzxDgL20lu7MWuFxISfJ7qlUAisoZMKk-ejPKwEOOtniw_U23wyMXhDL8DIh74cPqCmU4rMO_ZbzjM0pwQS3QW_srt6l97VirAFJE7EIE4DUGYipQGTPOvDlMpCUasj-Hd6Pe-adShRreUTlYYuAJmvuy6tDG1tuNJMajfp_JkKIvG9adwmEfN6q-7ZfFywIwLE-y6ME0s5tk6uNtlO7irFQdwE108T_KflpBdU3tNIsENkg4d9zT93mDo" }
-              ].map((t, i) => (
-                <div key={i} className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm relative group hover:shadow-md transition-all">
-                  <span className="material-symbols-outlined absolute top-6 right-8 text-primary/20 text-4xl">format_quote</span>
-                  <p className="text-slate-600 mb-6 italic leading-relaxed">"{t.text}"</p>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-slate-200 overflow-hidden">
-                      <img alt={t.name} className="w-full h-full object-cover" src={t.img} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm">{t.name}</p>
-                      <p className="text-xs text-slate-500">{t.role}</p>
-                    </div>
+            <div className="flex flex-col md:flex-row gap-20 items-center mb-24">
+              <div className="flex-1">
+                <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 text-slate-900">
+                  Built for <span className="text-primary italic">Scale.</span>
+                </h2>
+                <p className="text-xl text-slate-600 font-medium leading-relaxed max-w-xl">
+                  Resolvr. isn't just a dashboard—it's a mission-critical infrastructure for the modern city, powered by cutting-edge automation.
+                </p>
+              </div>
+              <div className="flex-1 grid grid-cols-2 gap-6">
+                {[
+                  { icon: "psychology", title: "Neural Routing", desc: "AI instantly maps reports to the correct municipal wing." },
+                  { icon: "encrypted", title: "Secure Privacy", desc: "Citizen data is encrypted with military-grade protocols." },
+                  { icon: "speed", title: "Real-time API", desc: "Synchronized updates between citizens and field agents." },
+                  { icon: "query_stats", title: "Predictive Analytics", desc: "Identify urban decay before it becomes a crisis." }
+                ].map((feature, i) => (
+                  <div key={i} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group">
+                    <span className="material-symbols-outlined text-primary text-4xl mb-6 block group-hover:scale-110 transition-transform">{feature.icon}</span>
+                    <h3 className="font-black uppercase text-[10px] tracking-widest text-slate-900 mb-2">{feature.title}</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">{feature.desc}</p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>

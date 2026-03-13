@@ -1,4 +1,4 @@
-import Sidebar from "../components/Sidebar";
+import Link from "next/link";
 
 export default function AdminLayout({
   children,
@@ -6,78 +6,85 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      <aside className="w-64 bg-nav-bg text-white h-full flex flex-col">
-        <div className="p-6 flex items-center gap-2 mb-8">
-          <span className="material-symbols-outlined text-3xl">location_city</span>
-          <span className="text-xl font-bold tracking-tight">CivicPulse</span>
-          <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-black uppercase">Admin</span>
+    <div className="flex h-screen bg-background-light overflow-hidden selection:bg-primary/30">
+      <aside className="w-72 bg-nav-bg text-white h-full flex flex-col shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+        
+        <div className="p-12 mb-10 relative z-10">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-4xl text-primary">location_city</span>
+            <div className="flex flex-col -gap-1">
+              <span className="text-2xl font-black tracking-tighter uppercase italic text-slate-900 group-hover:text-primary transition-colors duration-500">Resolvr.</span>
+              <span className="text-[8px] bg-white/10 px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest text-primary w-fit">Central Admin</span>
+            </div>
+          </div>
         </div>
 
-        <nav className="flex-grow px-4">
-          <ul className="space-y-2">
+        <nav className="flex-grow px-8 relative z-10">
+          <ul className="space-y-4">
             {[
-              { icon: "analytics", label: "Dashboard", active: true },
-              { icon: "description", label: "Complaints" },
-              { icon: "query_stats", label: "Analytics" },
+              { icon: "analytics", label: "Intelligence", active: true },
+              { icon: "description", label: "Registry" },
+              { icon: "query_stats", label: "Forecasting" },
               { icon: "business", label: "Departments" },
-              { icon: "map", label: "Wards Map" },
+              { icon: "map", label: "Ward Grid" },
             ].map((item) => (
               <li key={item.label}>
-                <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  item.active ? "bg-white/10" : "hover:bg-white/5"
+                <button className={`w-full flex items-center justify-between px-6 py-4 rounded-[24px] transition-all group ${
+                  item.active ? "bg-white/10 shadow-lg text-white" : "text-white/40 hover:text-white hover:bg-white/5"
                 }`}>
-                  <span className="material-symbols-outlined">{item.icon}</span>
-                  <span className="font-medium">{item.label}</span>
+                  <div className="flex items-center gap-4">
+                    <span className={`material-symbols-outlined ${item.active ? 'text-primary' : 'group-hover:text-white'}`}>
+                      {item.icon}
+                    </span>
+                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${item.active ? 'text-white' : 'group-hover:text-white'}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                  {item.active && <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(132,147,74,1)]"></div>}
                 </button>
               </li>
             ))}
           </ul>
         </nav>
 
-        <div className="p-6 mt-auto border-t border-white/10">
-          <button className="flex items-center gap-3 w-full px-4 py-3 hover:bg-white/5 rounded-lg transition-colors">
-            <span className="material-symbols-outlined">settings</span>
-            <span className="font-medium">Settings</span>
+        <div className="p-10 border-t border-white/5 relative z-10">
+          <button className="flex items-center gap-4 w-full px-6 py-4 hover:bg-white/5 rounded-2xl transition-colors text-white/40 hover:text-white group">
+            <span className="material-symbols-outlined group-hover:rotate-45 transition-transform">settings</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">Core Config</span>
           </button>
-          <button className="bg-primary/20 hover:bg-primary/30 text-white w-full py-3 rounded-xl font-bold mt-4 transition-all">
-            Export Report
+          <button className="bg-primary/20 hover:bg-primary text-white w-full py-4 rounded-[20px] text-[10px] font-black uppercase tracking-widest mt-6 transition-all shadow-lg hover:shadow-primary/20">
+            Export Insights
           </button>
         </div>
       </aside>
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
-          <h2 className="text-xl font-bold text-slate-900">Analytics Overview</h2>
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex flex-1 max-w-xs relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-              <input 
-                type="text" 
-                placeholder="Search data points..." 
-                className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm"
-              />
+        <header className="h-28 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-12 shrink-0">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-3xl font-black tracking-tighter text-slate-900 italic">Urban Analytics</h2>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Aggregated Neural Metrics for Oct 2024</p>
+          </div>
+          <div className="flex items-center gap-10">
+            <div className="hidden lg:flex items-center gap-3">
+               <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+               <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Live Infrastructure Relay</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 relative">
-                <span className="material-symbols-outlined">notifications</span>
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-              </div>
-              <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+            <div className="flex items-center gap-6 pl-10 border-l border-slate-100">
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold">Admin User</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">Super Admin</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Nagaraj S.</p>
+                  <p className="text-[8px] text-primary uppercase tracking-[0.2em] font-black">Level-4 Executive</p>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-600">
-                  AU
+                <div className="w-14 h-14 rounded-2xl bg-slate-900 overflow-hidden border-4 border-white shadow-xl flex items-center justify-center font-black text-primary text-xl italic transition-transform hover:rotate-6 cursor-pointer">
+                  NS
                 </div>
-              </div>
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto bg-slate-50">
+        <main className="flex-1 overflow-y-auto bg-slate-50/50">
           {children}
         </main>
       </div>
     </div>
   );
 }
+

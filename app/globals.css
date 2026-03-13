@@ -2,21 +2,23 @@
 
 @theme {
   --color-primary: #84934A;
-  --color-nav-bg: #656D3F;
-  --color-background-light: #ECECEC;
-  --color-background-dark: #1b1c16;
-  --font-display: "Inter", "sans-serif";
+  --color-nav-bg: #4A5D23;
+  --color-background-light: #F8FAF7;
+  --color-background-dark: #0F1109;
+  
+  --color-muted: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  --color-muted-foreground: #64748b;
 }
 
 :root {
-  --background: #ECECEC;
+  --background: #F8FAF7;
   --foreground: #0f172a;
   --primary: #84934A;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1b1c16;
+    --background: #0F1109;
     --foreground: #f8fafc;
   }
 }
@@ -24,17 +26,55 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-display);
+  font-family: "Space Grotesk", sans-serif !important;
+  font-optical-sizing: auto;
+  font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.02em;
+}
+
+/* The specific class pattern requested by the user */
+.space-grotesk-fixed {
+  font-family: "Space Grotesk", sans-serif !important;
+  font-optical-sizing: auto;
+  font-weight: inherit;
+  font-style: normal;
+}
+
+/* Force Space Grotesk on everything EXCEPT icons */
+*:not(.material-symbols-outlined) {
+  font-family: "Space Grotesk", sans-serif !important;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl;
   }
   .glass-dark {
-    @apply bg-black/10 backdrop-blur-md border border-white/10;
+    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-xl;
+  }
+  .text-glow {
+    text-shadow: 0 0 20px rgba(132, 147, 74, 0.3);
   }
 }
+
+
 

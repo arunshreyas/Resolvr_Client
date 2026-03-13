@@ -6,32 +6,38 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-background-light overflow-hidden selection:bg-primary/30">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
-          <div className="flex-1 max-w-xl relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+        <header className="h-24 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-10 shrink-0">
+          <div className="flex-1 max-w-xl relative group">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors">search</span>
             <input 
               type="text" 
-              placeholder="Search complaints, wards, or resources..." 
-              className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 transition-all"
+              placeholder="Search reports or wards..." 
+              className="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
             />
           </div>
-          <div className="flex items-center gap-4 ml-8">
-            <button className="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
-              <span className="material-symbols-outlined text-sm">add</span>
-              Submit New Complaint
-            </button>
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 transition-colors">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-5">
+               <button className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100 transition-all relative group">
+                 <span className="material-symbols-outlined group-hover:scale-110 transition-transform">notifications</span>
+                 <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+               </button>
+               <button className="bg-primary text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">
+                 Report New Issue
+               </button>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center hover:bg-slate-200 cursor-pointer transition-colors">
               <span className="material-symbols-outlined">help</span>
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto bg-slate-50">
+        <main className="flex-1 overflow-y-auto bg-slate-50/50">
           {children}
         </main>
       </div>
     </div>
   );
 }
+

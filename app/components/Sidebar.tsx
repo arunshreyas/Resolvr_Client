@@ -9,42 +9,52 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-nav-bg text-white h-full flex flex-col">
-      <div className="p-6 flex items-center gap-2 mb-8">
-        <span className="material-symbols-outlined text-3xl">location_city</span>
-        <span className="text-xl font-bold tracking-tight">CivicPulse</span>
+    <aside className="w-64 bg-nav-bg text-white h-full flex flex-col shadow-2xl relative overflow-hidden">
+      {/* Decorative background element */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+      
+      <div className="p-10 mb-8 relative z-10">
+        <div className="flex items-center gap-3">
+          <span className="material-symbols-outlined text-3xl text-primary">location_city</span>
+          <span className="text-xl font-black tracking-tighter uppercase italic text-slate-900">Resolvr.</span>
+        </div>
       </div>
 
-      <nav className="flex-grow px-4">
-        <ul className="space-y-2">
+      <nav className="flex-grow px-6 relative z-10">
+        <ul className="space-y-3">
           {menuItems.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  item.active ? "bg-white/10" : "hover:bg-white/5"
+                className={`flex items-center gap-4 px-6 py-4 rounded-[20px] transition-all group ${
+                  item.active ? "bg-white/10 shadow-lg text-white" : "text-white/40 hover:text-white hover:bg-white/5"
                 }`}
               >
-                <span className="material-symbols-outlined">{item.icon}</span>
-                <span className="font-medium">{item.label}</span>
+                <span className={`material-symbols-outlined ${item.active ? 'text-primary' : 'group-hover:text-white'}`}>
+                  {item.icon}
+                </span>
+                <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${item.active ? 'text-white' : 'group-hover:text-white'}`}>
+                  {item.label}
+                </span>
               </Link>
             </li>
           ))}
         </ul>
       </nav>
 
-      <div className="p-6 mt-auto border-t border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center text-slate-600 font-bold">
+      <div className="p-8 border-t border-white/5 relative z-10">
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 shadow-inner">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center font-black text-white shadow-lg shadow-primary/20">
             JD
           </div>
-          <div className="flex-grow">
-            <p className="text-sm font-bold truncate">Jayanth Das</p>
-            <p className="text-xs text-white/60 truncate">Indiranagar Ward</p>
+          <div className="flex-grow min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-widest text-white truncate">Jayanth Das</p>
+            <p className="text-[8px] font-bold uppercase tracking-widest text-white/40 truncate">Indiranagar Ward</p>
           </div>
-          <span className="material-symbols-outlined text-sm cursor-pointer hover:text-white/80 transition-colors">settings</span>
+          <span className="material-symbols-outlined text-sm cursor-pointer text-white/20 hover:text-white transition-colors">settings</span>
         </div>
       </div>
     </aside>
   );
 }
+
