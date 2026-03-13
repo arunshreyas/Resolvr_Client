@@ -51,21 +51,16 @@ export default function AdminLayout({
       <aside className="w-72 bg-nav-bg text-white h-full flex flex-col shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
 
-        <div className="p-12 mb-10 relative z-10">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-4xl text-primary">
-              location_city
-            </span>
-            <div>
-              <span className="text-2xl font-black tracking-tighter italic text-slate-900">
-                Resolvr.
-              </span>
-              <span className="dm-sans-ui mt-1 block w-fit rounded-full bg-white/10 px-2 py-1 text-[11px] font-medium text-primary">
-                Central Admin
-              </span>
-            </div>
-          </div>
-        </div>
+        <Link
+          href="/"
+          className="py-12 relative z-10 flex justify-center items-center"
+        >
+          <img
+            src="/assets/resolver_logo.png"
+            alt="Resolvr. Logo"
+            className="w-12 h-12 object-contain invert brightness-0"
+          />
+        </Link>
 
         <nav className="flex-grow px-8 relative z-10">
           <ul className="space-y-4">
@@ -148,7 +143,7 @@ export default function AdminLayout({
             <div className="flex items-center gap-6 pl-10 border-l border-slate-100">
               <div className="text-right hidden sm:block">
                 <p className="dm-sans-ui text-sm font-medium text-slate-900">
-                  Nagaraj S.
+                  Admin Account
                 </p>
                 <p className="dm-sans-ui text-xs font-medium text-primary">
                   Level-4 Executive

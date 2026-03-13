@@ -29,15 +29,18 @@ export default function Sidebar() {
       {/* Decorative background element */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
       
-      <div className="py-12 relative z-10 flex justify-center items-center transition-all duration-300">
-        <img 
-          src="/assets/resolver_logo.png" 
-          alt="Resolvr. Logo" 
+      <Link
+        href="/"
+        className="py-12 relative z-10 flex justify-center items-center transition-all duration-300"
+      >
+        <img
+          src="/assets/resolver_logo.png"
+          alt="Resolvr. Logo"
           className={`w-12 h-12 object-contain invert brightness-0 transition-transform duration-300 ${
             isExpanded ? "scale-110" : ""
           }`}
         />
-      </div>
+      </Link>
 
       <nav className="flex-grow px-6 relative z-10">
         <ul className="space-y-3">

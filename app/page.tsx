@@ -1,6 +1,8 @@
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Link from "next/link";
+import { BGPattern } from "@/components/ui/bg-pattern";
+import { DottedSurface } from "@/components/ui/dotted-surface";
 
 export default function Home() {
   return (
@@ -10,63 +12,75 @@ export default function Home() {
       <main className="flex-grow">
         {/* Hero Section */}
         <header className="relative overflow-hidden pt-24 pb-32 px-6">
-          {/* Background Blobs */}
+          <BGPattern
+            variant="grid"
+            mask="fade-right"
+            size={36}
+            fill="rgba(132,147,74,0.14)"
+            className="pointer-events-none opacity-100"
+          />
+          <BGPattern
+            variant="dots"
+            mask="fade-bottom"
+            size={24}
+            fill="rgba(74,93,35,0.1)"
+            className="pointer-events-none opacity-70"
+          />
           <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
-          
+
           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
-            <div className="flex flex-col gap-10">
-              <div className="inline-flex items-center gap-3 bg-white/40 backdrop-blur-md px-4 py-1.5 rounded-full w-fit border border-white/40 shadow-sm animate-fade-in">
-                <span className="material-symbols-outlined text-primary text-sm animate-pulse">bolt</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700">AI-Powered Governance</span>
-              </div>
-              
-              <div className="space-y-6">
-                <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter text-slate-900">
-                  Fix <br /> Bengaluru <br />
-                  <span className="text-primary italic">Together.</span>
-                </h1>
-                <p className="text-xl text-slate-600 leading-tight max-w-lg font-medium">
-                  Building a smarter, cleaner city through automated <span className="text-slate-900 font-bold">issue routing</span> and citizen empowerment.
-                </p>
+              <div className="flex flex-col gap-10">
+                <div className="inline-flex items-center gap-3 bg-white/55 backdrop-blur-md px-4 py-1.5 rounded-full w-fit border border-white/50 shadow-sm animate-fade-in">
+                  <span className="material-symbols-outlined text-primary text-sm animate-pulse">bolt</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-700">AI-Powered Governance</span>
+                </div>
+
+                <div className="space-y-6">
+                  <h1 className="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter text-slate-900">
+                    Fix <br /> Bengaluru <br />
+                    <span className="text-primary italic">Together.</span>
+                  </h1>
+                  <p className="text-xl text-slate-700 leading-tight max-w-lg font-medium">
+                    Building a smarter, cleaner city through automated <span className="text-slate-900 font-bold">issue routing</span> and citizen empowerment.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-5">
+                  <Link href="/dashboard/submit" className="group relative bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-3 overflow-hidden">
+                    <span className="relative z-10">Report an Issue</span>
+                    <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">add_circle</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/0 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                  </Link>
+                  <Link href="/dashboard" className="bg-white/80 backdrop-blur-md hover:bg-white text-slate-900 border border-slate-200/50 px-10 py-5 rounded-2xl text-lg font-bold shadow-xl shadow-slate-200/20 flex items-center gap-3 transition-all">
+                    <span className="material-symbols-outlined">track_changes</span>
+                    Track Complaint
+                  </Link>
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-5">
-                <Link href="/dashboard/submit" className="group relative bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-3 overflow-hidden">
-                  <span className="relative z-10">Report an Issue</span>
-                  <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">add_circle</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/0 opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                </Link>
-                <Link href="/dashboard" className="bg-white/80 backdrop-blur-md hover:bg-white text-slate-900 border border-slate-200/50 px-10 py-5 rounded-2xl text-lg font-bold shadow-xl shadow-slate-200/20 flex items-center gap-3 transition-all">
-                  <span className="material-symbols-outlined">track_changes</span>
-                  Track Complaint
-                </Link>
-              </div>
-            </div>
-            
-            <div className="relative group">
-              <div className="relative aspect-[4/5] md:aspect-square bg-slate-200 rounded-[40px] overflow-hidden border border-white shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]">
-                <img 
-                  alt="Bengaluru city landscape" 
-                  className="object-cover w-full h-full transform transition-transform duration-1000 group-hover:scale-110"
-                  src="/assets/bengaluru_hero.png"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
-              </div>
-              
-              {/* Floating Stat Card */}
-              <div className="absolute -bottom-10 -left-10 glass p-8 rounded-[32px] max-w-[280px] hidden md:block animate-float">
-                <div className="flex items-center gap-5">
-                  <div className="bg-primary p-4 rounded-2xl text-white shadow-lg shadow-primary/30">
-                    <span className="material-symbols-outlined text-3xl">verified</span>
-                  </div>
-                  <div>
-                    <p className="text-3xl font-black text-slate-900">12.4k</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-800">Issues Resolved</p>
+              <div className="relative group">
+                <div className="relative aspect-[4/5] md:aspect-square bg-slate-200/80 rounded-[40px] overflow-hidden border border-white shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]">
+                  <img
+                    alt="Bengaluru city landscape"
+                    className="object-cover w-full h-full transform transition-transform duration-1000 group-hover:scale-110"
+                    src="/assets/bengaluru_hero.png"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
+                </div>
+
+                <div className="absolute -bottom-10 -left-10 glass p-8 rounded-[32px] max-w-[280px] hidden md:block animate-float">
+                  <div className="flex items-center gap-5">
+                    <div className="bg-primary p-4 rounded-2xl text-white shadow-lg shadow-primary/30">
+                      <span className="material-symbols-outlined text-3xl">verified</span>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-black text-slate-900">12.4k</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-800">Issues Resolved</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
           </div>
         </header>
 
@@ -105,8 +119,17 @@ export default function Home() {
         </section>
 
         {/* Stats Section - Premium Look */}
-        <section className="py-24 px-6 bg-slate-900 border-y border-white/5" id="stats">
-          <div className="max-w-7xl mx-auto">
+        <section className="relative py-24 px-6 bg-slate-900 border-y border-white/5 overflow-hidden" id="stats">
+          <DottedSurface className="opacity-90" />
+          <BGPattern
+            variant="grid"
+            mask="fade-y"
+            size={40}
+            fill="rgba(255,255,255,0.07)"
+            className="pointer-events-none opacity-75"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(132,147,74,0.16),transparent_30%),linear-gradient(180deg,rgba(9,21,59,0.12),rgba(9,21,59,0.35))]"></div>
+          <div className="max-w-7xl mx-auto relative z-10">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-8">
               {[
                 { title: "BBMP & BWSSB", label: "Multi-Agency Grid" },
