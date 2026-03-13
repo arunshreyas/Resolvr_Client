@@ -1,136 +1,303 @@
-'use client';
+"use client";
 
-import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import type { Complaint } from "@/app/lib/complaints";
+import {
+  formatComplaintDate,
+  formatComplaintLocation,
+  getComplaintStatusLabel,
+  getComplaintStatusTone,
+  isComplaintActive,
+} from "@/app/lib/complaints";
 
-export default function ComplaintDetail() {
-  const { id } = useParams();
+export default function ComplaintDetailPage() {
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const { user, isLoaded, isSignedIn } = useUser();
+  const params = useParams<{ id: string }>();
   const router = useRouter();
+  const [complaint, setComplaint] = useState<Complaint | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for the specific complaint
-  const complaint = {
-    id: id || "C-123",
-    category: "Sanitation",
-    status: "In Progress",
-    title: "Garbage Pile near Indiranagar Park",
-    description: "Illegal dumping has been observed for over a week. The smell is becoming unbearable for residents nearby. Multiple bags of construction debris and household waste have been spotted.",
-    date: "Oct 24, 2024",
-    ward: "Ward 80",
-    location: "Indiranagar 1st Stage, near Public Park entrance",
-    department: "BBMP Solid Waste Management",
-    timeline: [
-      { date: "Oct 24, 2024", time: "10:30 AM", event: "Issue Reported", detail: "Ticket generated and assigned to Ward 80.", status: "completed" },
-      { date: "Oct 24, 2024", time: "02:15 PM", event: "Automated Neural Routing", detail: "Categorized as 'Sanitation' and routed to BBMP SWM.", status: "completed" },
-      { date: "Oct 25, 2024", time: "09:00 AM", event: "Department Acknowledged", detail: "Assistant Engineer (SWM) assigned to the case.", status: "completed" },
-      { date: "Oct 26, 2024", time: "11:45 AM", event: "On-site Inspection", detail: "Field agent confirmed illegal dumping site.", status: "in-progress" },
-      { date: "Pending", time: "-", event: "Clearing Operation", detail: "Scheduled for next collection cycle.", status: "pending" },
-    ]
-  };
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (!isSignedIn || !user?.id) {
+      setLoading(false);
+      setError("Please sign in to view this complaint.");
+      return;
+    }
+
+    if (!params?.id) {
+      setLoading(false);
+      setError("Complaint id is missing.");
+      return;
+    }
+
+    const currentUserId = user.id;
+    let isCancelled = false;
+
+    async function loadComplaint() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(`${apiBaseUrl}/complaints/${params.id}`, {
+          cache: "no-store",
+        });
+
+        if (response.status === 404) {
+          throw new Error("That complaint could not be found.");
+        }
+
+        if (!response.ok) {
+          throw new Error("Failed to load complaint details.");
+        }
+
+        const data = (await response.json()) as Complaint;
+
+        if (data.user?.clerkId !== currentUserId) {
+          throw new Error("You do not have access to this complaint.");
+        }
+
+        if (!isCancelled) {
+          setComplaint(data);
+        }
+      } catch (err: unknown) {
+        if (!isCancelled) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Could not load complaint details.",
+          );
+        }
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadComplaint();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [apiBaseUrl, isLoaded, isSignedIn, params?.id, user]);
+
+  const timeline = useMemo(() => {
+    if (!complaint) {
+      return [];
+    }
+
+    const currentStatus = getComplaintStatusLabel(complaint.status);
+    const isActive = isComplaintActive(complaint.status);
+
+    return [
+      {
+        label: "Complaint filed",
+        detail: "Your complaint was registered in the city system.",
+        status: "completed",
+        date: formatComplaintDate(complaint.createdAt),
+      },
+      {
+        label: "Relay review",
+        detail: "The complaint was routed to the civic action queue.",
+        status: "completed",
+        date: formatComplaintDate(complaint.createdAt),
+      },
+      {
+        label: currentStatus,
+        detail: isActive
+          ? "The complaint is waiting for or receiving official action."
+          : complaint.status === "RESOLVED"
+            ? "The complaint was marked resolved by the backend."
+            : "The complaint requires attention or rework.",
+        status: isActive ? "active" : complaint.status === "RESOLVED" ? "completed" : "alert",
+        date: formatComplaintDate(complaint.updatedAt),
+      },
+    ];
+  }, [complaint]);
+
+  if (loading) {
+    return (
+      <div className="p-12">
+        <div className="h-[540px] rounded-[48px] bg-white animate-pulse"></div>
+      </div>
+    );
+  }
+
+  if (error || !complaint) {
+    return (
+      <div className="p-12">
+        <div className="rounded-[40px] border border-rose-200 bg-rose-50 px-10 py-8 text-rose-700">
+          <p className="dm-sans-ui text-base font-medium">
+            {error || "Complaint not found."}
+          </p>
+          <Link
+            href="/dashboard/complaints"
+            className="dm-sans-ui mt-6 inline-flex items-center gap-3 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white"
+          >
+            <span className="material-symbols-outlined text-base">arrow_back</span>
+            Back to complaints
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const tone = getComplaintStatusTone(complaint.status);
 
   return (
-    <div className="p-12 space-y-12 max-w-7xl mx-auto">
-      <div className="flex items-center gap-6">
-        <button 
+    <div className="mx-auto max-w-7xl space-y-10 p-12">
+      <div className="flex items-start gap-5">
+        <button
           onClick={() => router.back()}
-          className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400 hover:text-primary transition-colors"
+          className="flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-400 shadow-sm transition-colors hover:text-primary"
         >
           <span className="material-symbols-outlined text-sm">arrow_back</span>
         </button>
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-[10px] font-black underline decoration-primary decoration-2 underline-offset-4 uppercase tracking-[0.2em] text-primary">{complaint.category}</span>
-            <span className="text-[10px] font-bold text-slate-400">/</span>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{complaint.id}</span>
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <span className="dm-sans-ui rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              C-{complaint.id}
+            </span>
+            <span
+              className={`dm-sans-ui rounded-full px-3 py-1 text-xs font-medium ${tone.badge}`}
+            >
+              {getComplaintStatusLabel(complaint.status)}
+            </span>
           </div>
-          <h2 className="text-4xl font-black tracking-tighter">{complaint.title}</h2>
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900">
+            {complaint.title}
+          </h1>
+          <p className="dm-sans-ui mt-3 max-w-3xl text-sm text-slate-500">
+            Created {formatComplaintDate(complaint.createdAt)} and updated{" "}
+            {formatComplaintDate(complaint.updatedAt)}.
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* Left Column: Details */}
-        <div className="lg:col-span-2 space-y-12">
-          <div className="bg-white rounded-[40px] p-10 border border-slate-100 shadow-xl shadow-slate-200/20">
-            <h3 className="text-xl font-black uppercase tracking-tighter italic mb-8 border-l-4 border-primary pl-4">Situation Analysis</h3>
-            <p className="text-slate-600 font-medium leading-relaxed text-lg mb-8">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.3fr_0.8fr]">
+        <div className="space-y-8">
+          <div className="rounded-[40px] border border-slate-100 bg-white p-10 shadow-xl shadow-slate-200/20">
+            <h2 className="text-2xl font-black tracking-tighter text-slate-900">
+              Complaint Summary
+            </h2>
+            <p className="dm-sans-ui mt-5 text-base leading-8 text-slate-600">
               {complaint.description}
             </p>
-            
-            <div className="grid grid-cols-2 gap-8 border-t border-slate-50 pt-10">
+
+            <div className="mt-10 grid gap-6 border-t border-slate-100 pt-8 sm:grid-cols-2">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Location</p>
-                <p className="font-bold text-slate-900">{complaint.location}</p>
-                <p className="text-xs text-slate-500">{complaint.ward}</p>
+                <p className="dm-sans-ui text-xs font-medium text-slate-400">
+                  Filed by
+                </p>
+                <p className="mt-2 text-lg font-black text-slate-900">
+                  {complaint.user?.name || complaint.userEmail || "Citizen"}
+                </p>
+                <p className="dm-sans-ui mt-1 text-sm text-slate-500">
+                  {complaint.userEmail || complaint.user?.email}
+                </p>
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Assigned To</p>
-                <p className="font-bold text-slate-900">{complaint.department}</p>
-                <p className="text-xs text-slate-500">Official Relay ID: SWM-80-AE</p>
+                <p className="dm-sans-ui text-xs font-medium text-slate-400">
+                  Shared location
+                </p>
+                <p className="mt-2 text-lg font-black text-slate-900">
+                  {formatComplaintLocation(complaint)}
+                </p>
+                <p className="dm-sans-ui mt-1 text-sm text-slate-500">
+                  {complaint.latitude != null && complaint.longitude != null
+                    ? "Location was captured during submission."
+                    : "This complaint was submitted without coordinates."}
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-900 rounded-[40px] p-10 text-white relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
-             <h3 className="text-xl font-black uppercase tracking-tighter italic mb-10 text-glow">Progress Ledger</h3>
-             
-             <div className="space-y-8 relative">
-                {/* Timeline Line */}
-                <div className="absolute left-[11px] top-2 bottom-2 w-px bg-white/10"></div>
-                
-                {complaint.timeline.map((item, i) => (
-                  <div key={i} className="relative flex gap-8 pl-10 group">
-                    <div className={`absolute left-0 top-1.5 w-[22px] h-[22px] rounded-full border-4 border-slate-900 z-10 ${
-                      item.status === 'completed' ? 'bg-primary' : 
-                      item.status === 'in-progress' ? 'bg-white animate-pulse shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 
-                      'bg-slate-800'
-                    }`}></div>
-                    
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-1">
-                        <h4 className={`font-black uppercase tracking-widest text-[10px] ${item.status === 'pending' ? 'text-white/30' : 'text-white'}`}>{item.event}</h4>
-                        <p className="text-[10px] font-bold text-white/40">{item.date} • {item.time}</p>
-                      </div>
-                      <p className={`text-sm ${item.status === 'pending' ? 'text-white/20' : 'text-white/60'}`}>{item.detail}</p>
-                    </div>
+          <div className="rounded-[40px] bg-slate-900 p-10 text-white">
+            <h2 className="text-2xl font-black tracking-tighter">
+              Activity Timeline
+            </h2>
+            <div className="mt-8 space-y-7">
+              {timeline.map((item) => (
+                <div key={`${item.label}-${item.date}`} className="flex gap-4">
+                  <div
+                    className={`mt-1 h-4 w-4 rounded-full ${
+                      item.status === "completed"
+                        ? "bg-primary"
+                        : item.status === "active"
+                          ? "bg-white animate-pulse"
+                          : "bg-rose-400"
+                    }`}
+                  ></div>
+                  <div>
+                    <p className="font-black text-lg">{item.label}</p>
+                    <p className="dm-sans-ui mt-1 text-sm text-white/70">
+                      {item.detail}
+                    </p>
+                    <p className="dm-sans-ui mt-2 text-xs text-white/40">
+                      {item.date}
+                    </p>
                   </div>
-                ))}
-             </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Right Column: Actions & Meta */}
         <div className="space-y-8">
-           <div className="bg-white rounded-[40px] p-10 border border-slate-100 shadow-xl shadow-slate-200/20 text-center">
-              <div className={`w-16 h-16 rounded-3xl mx-auto mb-6 flex items-center justify-center ${
-                complaint.status === 'In Progress' ? 'bg-primary/20 text-primary animate-pulse' : 'bg-green-100 text-green-600'
-              }`}>
-                <span className="material-symbols-outlined text-3xl">
-                  {complaint.status === 'In Progress' ? 'sync' : 'verified_user'}
-                </span>
-              </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-2">Current Status</p>
-              <h4 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter mb-8">{complaint.status}</h4>
-              <button className="w-full bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] py-5 rounded-2xl hover:bg-primary transition-all shadow-lg shadow-black/10">
-                Request Urgent Update
-              </button>
-           </div>
+          <div className="rounded-[40px] border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/20">
+            <div
+              className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl ${tone.panel}`}
+            >
+              <span className="material-symbols-outlined text-3xl">
+                {tone.icon}
+              </span>
+            </div>
+            <p className="dm-sans-ui text-center text-xs font-medium text-slate-400">
+              Current status
+            </p>
+            <h2 className="mt-3 text-center text-3xl font-black text-slate-900">
+              {getComplaintStatusLabel(complaint.status)}
+            </h2>
+            <p className="dm-sans-ui mt-4 text-center text-sm text-slate-500">
+              Pending complaints are shown as in progress so ongoing city work
+              stays easier to track.
+            </p>
+          </div>
 
-           <div className="bg-slate-50 rounded-[40px] p-10 border border-slate-100">
-              <h3 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-6">Evidence Logs</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="aspect-square bg-slate-200 rounded-2xl overflow-hidden relative group">
-                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="material-symbols-outlined text-white text-xl">zoom_in</span>
-                   </div>
-                </div>
-                <div className="aspect-square bg-slate-200 rounded-2xl overflow-hidden relative group">
-                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="material-symbols-outlined text-white text-xl">zoom_in</span>
-                   </div>
-                </div>
-              </div>
-              <p className="mt-4 text-[10px] font-bold text-slate-400 italic text-center">Authenticated via Mobile App Geotag</p>
-           </div>
+          <div className="rounded-[40px] border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/20">
+            <h3 className="text-2xl font-black tracking-tighter text-slate-900">
+              Quick links
+            </h3>
+            <div className="mt-6 grid gap-4">
+              <Link
+                href="/dashboard/complaints"
+                className="dm-sans-ui rounded-[24px] border border-slate-100 bg-slate-50 px-5 py-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+              >
+                Back to all complaints
+              </Link>
+              <Link
+                href="/dashboard/map"
+                className="dm-sans-ui rounded-[24px] border border-slate-100 bg-slate-50 px-5 py-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
+              >
+                Open map view
+              </Link>
+              <Link
+                href="/dashboard/submit"
+                className="dm-sans-ui rounded-[24px] bg-primary px-5 py-4 text-sm font-medium text-white shadow-lg shadow-primary/20"
+              >
+                Submit another complaint
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useUser, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useGeolocation } from "@/app/hooks/useGeolocation";
+import { HoverButton } from "@/components/ui/hover-button";
 
 /**
  * MUNICIPAL COMPLAINT SYSTEM
@@ -15,6 +16,7 @@ import { useGeolocation } from "@/app/hooks/useGeolocation";
  */
 
 export default function SubmitComplaint() {
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
   const { getToken } = useAuth();
   const { latitude, longitude, error: geoError, loading: geoLoading } = useGeolocation();
@@ -46,8 +48,11 @@ export default function SubmitComplaint() {
     try {
       const token = await getToken();
 
-      // Dispatching directly to the specific NestJS endpoint as requested
-      const response = await fetch('http://localhost:3000/complaints', {
+      if (!token) {
+        throw new Error("Authentication token is missing. Please sign in again.");
+      }
+
+      const response = await fetch(`${apiBaseUrl}/complaints`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,10 +61,8 @@ export default function SubmitComplaint() {
         body: JSON.stringify({
           title,
           description,
-          userId: 1, // Mapped to backend schema
           latitude: latitude || null,
           longitude: longitude || null,
-          userEmail: user?.primaryEmailAddress?.emailAddress,
         })
       });
 
@@ -76,9 +79,13 @@ export default function SubmitComplaint() {
       setSuccess(true);
       setTimeout(() => router.push('/dashboard'), 2000);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Transmission Error:", err);
-      setError("Connection failure. Ensure your internet is active and try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Connection failure. Ensure your internet is active and try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -112,7 +119,7 @@ export default function SubmitComplaint() {
               <span className="material-symbols-outlined text-lg">
                 {geoError ? 'location_off' : geoLoading ? 'sync' : 'verified_user'}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider">
+              <span className="text-xs font-bold uppercase tracking-wider">
                 {geoLoading ? 'Acquiring GPS Signal...' : 
                  geoError ? `Location Error: ${geoError}` : 
                  `GPS Signal Locked: ${latitude?.toFixed(5)}, ${longitude?.toFixed(5)}`}
@@ -121,7 +128,7 @@ export default function SubmitComplaint() {
 
             {/* Title Input */}
             <div className="space-y-2">
-               <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Grievance Subject</label>
+               <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Grievance Subject</label>
                <input 
                   type="text" 
                   placeholder="Summarize the issue clearly"
@@ -133,7 +140,7 @@ export default function SubmitComplaint() {
 
             {/* Description Input */}
             <div className="space-y-2">
-               <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Nature of Complaint</label>
+               <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Nature of Complaint</label>
                <textarea 
                   placeholder="Provide comprehensive details about the civic grievance..."
                   value={description}
@@ -144,26 +151,26 @@ export default function SubmitComplaint() {
 
             {/* Error Message */}
             {error && (
-              <div className="p-5 bg-rose-50 text-rose-700 border border-rose-100 rounded-3xl text-[10px] font-black uppercase tracking-widest text-center">
+              <div className="p-5 bg-rose-50 text-rose-700 border border-rose-100 rounded-3xl text-xs font-black uppercase tracking-widest text-center">
                 {error}
               </div>
             )}
 
             {/* Submit Block */}
             <div className="flex items-center gap-8 bg-slate-900 rounded-[40px] p-10 text-white relative overflow-hidden">
-               <div className="flex-grow">
-                  <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em] mb-2">Registry ID</p>
-                  <p className="text-[10px] text-white/80 font-black uppercase tracking-[0.2em]">
-                    {isSignedIn ? (user.fullName || user.primaryEmailAddress?.emailAddress) : "Anonymous Node"}
-                  </p>
-               </div>
-               <button 
-                 type="submit"
-                 disabled={loading || !isSignedIn}
-                 className="px-14 py-6 bg-white text-slate-900 rounded-3xl text-[10px] font-black uppercase tracking-[0.4em] hover:bg-emerald-400 hover:text-white transition-all shadow-2xl shadow-white/10 disabled:opacity-50 flex items-center gap-4"
-               >
-                  {loading ? "TRANSMITTING..." : "SUBMIT REPORT"}
-               </button>
+                <div className="flex-grow">
+                   <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1.5 rotate-[0]">Registry ID</p>
+                   <p className="text-[15px] text-white/90 font-medium">
+                     {isSignedIn ? (user.fullName || user.primaryEmailAddress?.emailAddress) : "Anonymous Node"}
+                   </p>
+                </div>
+                <HoverButton 
+                  type="submit"
+                  disabled={loading || !isSignedIn}
+                  className="px-14 py-6 rounded-3xl shadow-2xl shadow-slate-900/20 disabled:opacity-50 flex items-center gap-4"
+                >
+                   {loading ? "Transmitting..." : "Submit Report"}
+                </HoverButton>
             </div>
            </form>
          )}

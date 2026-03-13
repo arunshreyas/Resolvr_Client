@@ -25,7 +25,7 @@ export default function Navbar() {
         <div className="bg-white/40 backdrop-blur-2xl border border-black/5 rounded-[40px] px-6 md:px-10 py-4 flex items-center justify-center gap-6 md:gap-12 shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
           
           <div className="hidden md:flex items-center gap-8">
-            <div className="flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">
+            <div className="dm-sans-ui flex gap-6 text-sm font-medium text-slate-600">
               <Link href="#how-it-works" className="whitespace-nowrap hover:text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">How it Works</Link>
               <Link href="#stats" className="whitespace-nowrap hover:text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Analytics</Link>
               <Link href="#tech" className="whitespace-nowrap hover:text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Technology</Link>
@@ -37,12 +37,12 @@ export default function Navbar() {
               <Show when="signed-out">
                 <div className="flex gap-2">
                   <SignInButton mode="modal">
-                    <button className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest px-6 py-3 bg-slate-900/5 hover:bg-slate-900/10 text-slate-900 border border-slate-900/10 rounded-2xl transition-all">
+                    <button className="dm-sans-ui whitespace-nowrap text-sm font-medium px-6 py-3 bg-slate-900/5 hover:bg-slate-900/10 text-slate-900 border border-slate-900/10 rounded-2xl transition-all">
                       Portal Login
                     </button>
                   </SignInButton>
                   <SignUpButton mode="modal">
-                    <button className="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/10 rounded-2xl transition-all">
+                    <button className="dm-sans-ui whitespace-nowrap text-sm font-medium px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/10 rounded-2xl transition-all">
                       Join Resolvr
                     </button>
                   </SignUpButton>
@@ -59,7 +59,7 @@ export default function Navbar() {
                   />
                 </div>
               </Show>
-              <Link href="/dashboard/submit" className="whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
+              <Link href="/dashboard/submit" className="dm-sans-ui whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
                 Submit Report
               </Link>
             </div>

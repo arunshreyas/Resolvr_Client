@@ -1,197 +1,526 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { Complaint, ComplaintStatus } from "@/app/lib/complaints";
+import {
+  formatComplaintDate,
+  formatComplaintLocation,
+  getComplaintStatusLabel,
+  getComplaintStatusTone,
+  isComplaintActive,
+} from "@/app/lib/complaints";
+
+type AdminUser = {
+  id: number;
+  clerkId: string | null;
+  email: string;
+  name: string | null;
+  complaints: Complaint[];
+};
+
+type StatusFilter = "ALL" | ComplaintStatus;
+
+const ComplaintLeafletMap = dynamic(
+  () => import("@/app/components/ComplaintLeafletMap"),
+  { ssr: false },
+);
+
+const statusActions: ComplaintStatus[] = [
+  "PENDING",
+  "IN_PROGRESS",
+  "RESOLVED",
+  "REJECTED",
+];
+
 export default function AdminDashboard() {
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [busyId, setBusyId] = useState<number | null>(null);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [usersResponse, complaintsResponse] = await Promise.all([
+        fetch(`${apiBaseUrl}/users`, { cache: "no-store" }),
+        fetch(`${apiBaseUrl}/complaints`, { cache: "no-store" }),
+      ]);
+
+      if (!usersResponse.ok || !complaintsResponse.ok) {
+        throw new Error("Failed to load admin data.");
+      }
+
+      const [usersData, complaintsData] = (await Promise.all([
+        usersResponse.json(),
+        complaintsResponse.json(),
+      ])) as [AdminUser[], Complaint[]];
+
+      setUsers(usersData);
+      setComplaints(complaintsData);
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Could not load admin dashboard.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [apiBaseUrl]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
+
+  useEffect(() => {
+    if (!message) return;
+    const timer = window.setTimeout(() => setMessage(null), 2200);
+    return () => window.clearTimeout(timer);
+  }, [message]);
+
+  const filteredComplaints = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return [...complaints]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .filter((complaint) => {
+        const matchesStatus =
+          statusFilter === "ALL" || complaint.status === statusFilter;
+        const haystack = [
+          complaint.title,
+          complaint.description,
+          complaint.user?.name || "",
+          complaint.user?.email || "",
+          complaint.userEmail || "",
+          `c-${complaint.id}`,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return matchesStatus && (!normalizedQuery || haystack.includes(normalizedQuery));
+      });
+  }, [complaints, query, statusFilter]);
+
+  const selectedComplaint =
+    complaints.find((complaint) => complaint.id === selectedId) ||
+    filteredComplaints[0] ||
+    null;
+
+  const mappedComplaints = complaints.filter(
+    (complaint) => complaint.latitude != null && complaint.longitude != null,
+  );
+  const activeCount = complaints.filter((complaint) =>
+    isComplaintActive(complaint.status),
+  ).length;
+  const resolvedCount = complaints.filter(
+    (complaint) => complaint.status === "RESOLVED",
+  ).length;
+  const rejectedCount = complaints.filter(
+    (complaint) => complaint.status === "REJECTED",
+  ).length;
+  const topUsers = [...users]
+    .sort((a, b) => b.complaints.length - a.complaints.length)
+    .slice(0, 5);
+
+  async function patchComplaint(id: number, status: ComplaintStatus) {
+    try {
+      setBusyId(id);
+      setError(null);
+      const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update complaint.");
+      const updated = (await response.json()) as Complaint;
+      setComplaints((current) =>
+        current.map((complaint) => (complaint.id === id ? updated : complaint)),
+      );
+      setSelectedId(id);
+      setMessage(`Complaint C-${id} updated.`);
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Could not update complaint.",
+      );
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function removeComplaint(id: number) {
+    if (!window.confirm(`Delete complaint C-${id}?`)) return;
+    try {
+      setBusyId(id);
+      setError(null);
+      const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete complaint.");
+      setComplaints((current) => current.filter((complaint) => complaint.id !== id));
+      setUsers((current) =>
+        current.map((user) => ({
+          ...user,
+          complaints: user.complaints.filter((complaint) => complaint.id !== id),
+        })),
+      );
+      if (selectedId === id) setSelectedId(null);
+      setMessage(`Complaint C-${id} deleted.`);
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error ? err.message : "Could not delete complaint.",
+      );
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   const stats = [
-    { label: "Neural Registry", value: "14.2k", tag: "+12.4%", status: "success", icon: "analytics" },
-    { label: "Active Nodes", value: "3,120", tag: "Stable", status: "neutral", icon: "hub" },
-    { label: "Resolution Flux", value: "10.4k", tag: "+8.2%", status: "success", icon: "dynamic_feed" },
-    { label: "System Alerts", value: "675", tag: "Critical", status: "danger", icon: "emergency_home" },
+    { label: "Complaints", value: complaints.length, tag: `${activeCount} active` },
+    { label: "Users", value: users.length, tag: `${users.filter((u) => u.clerkId).length} synced` },
+    { label: "Resolved", value: resolvedCount, tag: complaints.length ? `${Math.round((resolvedCount / complaints.length) * 100)}% closure` : "No data" },
+    { label: "Mapped", value: mappedComplaints.length, tag: "Geo-enabled" },
   ];
 
   return (
-    <div className="p-12 space-y-12">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {stats.map((stat, i) => (
-          <div key={i} className={`bg-white p-10 rounded-[48px] border border-slate-100 shadow-2xl shadow-slate-200/40 relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 ${
-             stat.status === 'danger' ? 'bg-slate-900 border-none' : ''
-          }`}>
-            <div className="flex justify-between items-start mb-10">
-              <div className={`p-4 rounded-2xl ${stat.status === 'danger' ? 'bg-white/10 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors'}`}>
-                 <span className="material-symbols-outlined text-3xl">{stat.icon}</span>
-              </div>
-              <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm ${
-                stat.status === 'success' ? 'bg-green-50 text-green-600' :
-                stat.status === 'danger' ? 'bg-red-500/20 text-red-500' :
-                'bg-slate-100 text-slate-500'
-              }`}>{stat.tag}</span>
-            </div>
-            <p className={`${stat.status === 'danger' ? 'text-white/60' : 'text-slate-600'} text-[10px] font-black uppercase tracking-[0.3em] mb-2`}>
-              {stat.label}
-            </p>
-            <h3 className={`text-5xl font-black ${stat.status === 'danger' ? 'text-white' : 'text-slate-900'}`}>{stat.value}</h3>
+    <div className="space-y-10 p-12">
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <p className="dm-sans-ui mb-3 text-sm font-medium text-primary">Admin operations</p>
+          <h1 className="text-5xl font-black tracking-tighter text-slate-900">Control Center</h1>
+          <p className="dm-sans-ui mt-3 max-w-3xl text-sm text-slate-500">
+            Live admin view for complaints, users, map activity, and queue actions.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          <button
+            type="button"
+            onClick={() => void loadData()}
+            className="dm-sans-ui rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-700 shadow-sm"
+          >
+            Refresh
+          </button>
+          <Link
+            href="/dashboard/map"
+            className="dm-sans-ui rounded-2xl bg-primary px-5 py-4 text-sm font-medium text-white shadow-lg shadow-primary/20"
+          >
+            Open citizen map
+          </Link>
+        </div>
+      </div>
+
+      {error ? (
+        <div className="rounded-[28px] border border-rose-200 bg-rose-50 px-6 py-4 text-rose-700">
+          <p className="dm-sans-ui text-sm font-medium">{error}</p>
+        </div>
+      ) : null}
+      {message ? (
+        <div className="rounded-[28px] border border-emerald-200 bg-emerald-50 px-6 py-4 text-emerald-700">
+          <p className="dm-sans-ui text-sm font-medium">{message}</p>
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-[40px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/30">
+            <p className="dm-sans-ui text-sm font-medium text-slate-500">{stat.label}</p>
+            <h2 className="mt-3 text-5xl font-black text-slate-900">{stat.value}</h2>
+            <p className="dm-sans-ui mt-3 text-xs font-medium text-slate-400">{stat.tag}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-12">
-        {/* Resolution Rate by Department */}
-        <div className="lg:col-span-2 bg-white p-12 rounded-[56px] border border-slate-100 shadow-2xl shadow-slate-200/20">
-          <div className="flex items-center justify-between mb-12">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
+          <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <h3 className="text-2xl font-black tracking-tighter uppercase italic">Institutional Yield</h3>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Resolution efficiency by primary department</p>
+              <h2 className="text-3xl font-black tracking-tighter text-slate-900">Queue Management</h2>
+              <p className="dm-sans-ui mt-2 text-sm text-slate-500">
+                Search, filter, update status, and delete complaints.
+              </p>
             </div>
-            <select className="bg-slate-50 border-none text-[10px] font-black uppercase tracking-widest rounded-xl px-6 py-3 cursor-pointer outline-none hover:bg-slate-100 transition-colors">
-              <option>Oct 2024</option>
-              <option>Sept 2024</option>
-            </select>
-          </div>
-          <div className="space-y-10">
-            {[
-              { name: "Waste Management (BBMP)", rate: 92, color: "bg-primary" },
-              { name: "Water Supply (BWSSB)", rate: 78, color: "bg-primary/70" },
-              { name: "Electricity (BESCOM)", rate: 85, color: "bg-primary/80" },
-              { name: "Road Maintenance", rate: 45, color: "bg-slate-200" },
-            ].map((dept) => (
-              <div key={dept.name} className="space-y-4">
-                <div className="flex justify-between items-end">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 italic">{dept.name}</span>
-                  <span className={`text-[10px] font-black ${dept.rate < 50 ? 'text-red-500' : 'text-slate-600'}`}>{dept.rate}%</span>
-                </div>
-                <div className="h-4 bg-slate-50 rounded-full overflow-hidden border border-slate-100 shadow-inner">
-                  <div 
-                    className={`h-full ${dept.color} transition-all duration-[2s] ease-out shadow-[0_0_10px_rgba(132,147,74,0.3)]`} 
-                    style={{ width: `${dept.rate}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Category Distribution Chart Mockup */}
-        <div className="bg-slate-900 p-12 rounded-[56px] shadow-2xl shadow-slate-900/40 flex flex-col items-center">
-            <h3 className="text-2xl font-black tracking-tighter uppercase italic text-white w-full text-left mb-12">Issue Density</h3>
-            <div className="relative w-56 h-56 flex items-center justify-center mb-12">
-                <div className="absolute inset-0 border-[30px] border-primary rounded-full opacity-10"></div>
-                <div className="absolute inset-0 border-[30px] border-primary border-t-transparent border-l-transparent rounded-full rotate-45 shadow-[0_0_20px_rgba(132,147,74,0.4)]"></div>
-                <div className="text-center">
-                    <p className="text-5xl font-black text-white">14k</p>
-                    <p className="text-[10px] text-white/40 uppercase font-black tracking-[0.3em] mt-1">Total</p>
-                </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search complaints or users"
+                className="dm-sans-ui rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 outline-none sm:w-72"
+              />
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+                className="dm-sans-ui rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 outline-none"
+              >
+                <option value="ALL">All statuses</option>
+                <option value="PENDING">Pending</option>
+                <option value="IN_PROGRESS">In progress</option>
+                <option value="RESOLVED">Resolved</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
             </div>
-            <div className="grid grid-cols-2 gap-6 w-full">
-                {[
-                    { label: "Infrastructure", val: "45%", dot: "bg-primary" },
-                    { label: "Utility", val: "25%", dot: "bg-primary/60" },
-                    { label: "Sanitation", val: "20%", dot: "bg-white/10" },
-                    { label: "Secondary", val: "10%", dot: "bg-white/5" },
-                ].map(cat => (
-                    <div key={cat.label} className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                           <div className={`w-2 h-2 rounded-full ${cat.dot}`}></div>
-                           <span className="text-[10px] font-black uppercase tracking-widest text-white/80">{cat.val}</span>
-                        </div>
-                        <span className="text-[8px] font-black uppercase tracking-widest text-white/40 ml-4">{cat.label}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-      </div>
-
-      {/* Map Heatmap Mockup */}
-      <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-2xl shadow-slate-200/20 overflow-hidden group">
-          <div className="flex items-center justify-between mb-12">
-              <div>
-                <h3 className="text-2xl font-black tracking-tighter uppercase italic">Spatial Intelligence</h3>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">Real-time ticket density across Bengaluru zones</p>
-              </div>
-              <div className="flex gap-4">
-                <div className="p-4 bg-slate-50 rounded-2xl text-slate-400 hover:text-primary transition-colors cursor-pointer">
-                    <span className="material-symbols-outlined text-sm">filter_alt</span>
-                </div>
-                <button className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all">Expand Matrix</button>
-              </div>
           </div>
-          <div className="grid lg:grid-cols-4 gap-12">
-              <div className="lg:col-span-3 h-[500px] bg-slate-50 rounded-[48px] relative overflow-hidden group-hover:shadow-inner transition-all flex items-center justify-center border border-slate-100">
-                  <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]"></div>
-                  <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2yG63q0iN1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4WqjG1I4Wqj" 
-                    className="w-full h-full object-cover opacity-20 grayscale contrast-125 group-hover:scale-110 transition-transform duration-[5s]"
-                    alt="Map mockup"
-                  />
-                  <div className="absolute top-1/2 left-1/3 w-20 h-20 bg-primary/20 rounded-full animate-pulse border border-primary/50 shadow-[0_0_30px_rgba(132,147,74,0.4)]"></div>
-                  <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-primary/10 rounded-full animate-pulse blur-3xl"></div>
-              </div>
-              <div className="space-y-8">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Peak Volume Wards</h4>
-                {[
-                    { name: "1. Whitefield", count: "1,240", status: "danger" },
-                    { name: "2. Koramangala", count: "892", status: "warning" },
-                    { name: "3. Indiranagar", count: "654", status: "warning" },
-                    { name: "4. Hebbal", count: "512", status: "neutral" },
-                    { name: "5. Jayanagar", count: "480", status: "neutral" },
-                ].map(ward => (
-                    <div key={ward.name} className="flex flex-col gap-2 group cursor-pointer">
-                        <div className="flex justify-between items-center transition-all group-hover:translate-x-1">
-                            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{ward.name}</span>
-                            <span className={`text-[8px] font-black px-2 py-0.5 rounded-full ${
-                                ward.status === 'danger' ? 'bg-red-50 text-red-600' :
-                                ward.status === 'warning' ? 'bg-amber-50 text-amber-600' :
-                                'bg-slate-50 text-slate-500'
-                            }`}>{ward.count} TIX</span>
-                        </div>
-                        <div className="h-1 bg-slate-50 rounded-full overflow-hidden">
-                            <div className={`h-full ${ward.status === 'danger' ? 'bg-red-500' : 'bg-slate-200'} w-full opacity-0 group-hover:opacity-100 transition-opacity`}></div>
-                        </div>
-                    </div>
-                ))}
-              </div>
-          </div>
-      </div>
 
-      {/* Alert Management & System Logs */}
-      <div className="grid lg:grid-cols-2 gap-12">
-          <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-2xl shadow-slate-200/20">
-              <h3 className="text-2xl font-black tracking-tighter uppercase italic mb-10 border-l-4 border-red-500 pl-4">Critical Vectors</h3>
-              <div className="space-y-6">
-                  {[
-                      { id: "SYS-A91", msg: "Water pressure drop detected in Indiranagar Sector B", type: "Infrastructure", time: "2m ago" },
-                      { id: "SYS-A92", msg: "Power grid instability reported near Whitefield Metro", type: "Utility", time: "15m ago" },
-                      { id: "SYS-A93", msg: "Unusual garbage pileup pattern in Ward 80", type: "Sanitation", time: "1h ago" },
-                  ].map(alert => (
-                      <div key={alert.id} className="p-6 bg-red-50/50 rounded-3xl border border-red-100 flex items-start gap-4 group hover:bg-red-50 transition-colors">
-                          <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/20 animate-pulse">
-                              <span className="material-symbols-outlined text-sm">warning</span>
-                          </div>
-                          <div>
-                              <div className="flex items-center gap-3 mb-1">
-                                  <span className="text-[8px] font-black uppercase tracking-widest text-red-500">{alert.type}</span>
-                                  <span className="text-[8px] font-bold text-slate-300">|</span>
-                                  <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">{alert.id}</span>
-                              </div>
-                              <p className="text-xs font-black text-slate-900 leading-tight mb-2 underline whitespace-pre-wrap">{alert.msg}</p>
-                              <span className="text-[8px] font-bold text-slate-400">{alert.time}</span>
-                          </div>
+          <div className="space-y-4">
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="h-28 rounded-[28px] bg-slate-50 animate-pulse"></div>
+              ))
+            ) : filteredComplaints.length === 0 ? (
+              <div className="rounded-[28px] border border-slate-100 bg-slate-50 px-6 py-10 text-center">
+                <p className="text-2xl font-black text-slate-900">No matching complaints</p>
+              </div>
+            ) : (
+              filteredComplaints.map((complaint) => {
+                const tone = getComplaintStatusTone(complaint.status);
+                const isBusy = busyId === complaint.id;
+                return (
+                  <div
+                    key={complaint.id}
+                    className={`rounded-[28px] border px-5 py-5 ${
+                      selectedComplaint?.id === complaint.id
+                        ? "border-primary/30 bg-primary/5"
+                        : "border-slate-100 bg-slate-50"
+                    }`}
+                  >
+                    <div className="flex flex-col gap-5 2xl:flex-row 2xl:items-start 2xl:justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedId(complaint.id)}
+                        className="min-w-0 text-left"
+                      >
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="dm-sans-ui rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+                            C-{complaint.id}
+                          </span>
+                          <span className={`dm-sans-ui rounded-full px-3 py-1 text-xs font-medium ${tone.badge}`}>
+                            {getComplaintStatusLabel(complaint.status)}
+                          </span>
+                        </div>
+                        <p className="mt-4 text-xl font-black text-slate-900">{complaint.title}</p>
+                        <p className="dm-sans-ui mt-2 line-clamp-2 text-sm text-slate-500">{complaint.description}</p>
+                        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                          <p className="dm-sans-ui text-xs font-medium text-slate-400">
+                            {complaint.user?.name || complaint.user?.email || complaint.userEmail}
+                          </p>
+                          <p className="dm-sans-ui text-xs font-medium text-slate-400">{formatComplaintDate(complaint.createdAt)}</p>
+                          <p className="dm-sans-ui text-xs font-medium text-slate-400">{formatComplaintLocation(complaint)}</p>
+                        </div>
+                      </button>
+
+                      <div className="grid gap-2 2xl:min-w-[230px]">
+                        <div className="grid grid-cols-2 gap-2">
+                          {statusActions.map((status) => (
+                            <button
+                              key={status}
+                              type="button"
+                              disabled={isBusy}
+                              onClick={() => void patchComplaint(complaint.id, status)}
+                              className={`dm-sans-ui rounded-2xl px-3 py-3 text-xs font-medium transition ${
+                                complaint.status === status
+                                  ? "bg-slate-900 text-white"
+                                  : "bg-white text-slate-600 hover:bg-slate-100"
+                              } disabled:opacity-50`}
+                            >
+                              {status === "IN_PROGRESS"
+                                ? "In progress"
+                                : status.charAt(0) + status.slice(1).toLowerCase()}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          <Link
+                            href={`/dashboard/complaint/${complaint.id}`}
+                            className="dm-sans-ui flex-1 rounded-2xl bg-white px-4 py-3 text-center text-xs font-medium text-slate-700"
+                          >
+                            Open detail
+                          </Link>
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            onClick={() => void removeComplaint(complaint.id)}
+                            className="dm-sans-ui rounded-2xl bg-rose-500 px-4 py-3 text-xs font-medium text-white disabled:opacity-50"
+                          >
+                            {isBusy ? "Working" : "Delete"}
+                          </button>
+                        </div>
                       </div>
-                  ))}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
+            <h2 className="text-3xl font-black tracking-tighter text-slate-900">Selected Complaint</h2>
+            {selectedComplaint ? (
+              <div className="mt-6 space-y-4">
+                <div className="flex flex-wrap gap-3">
+                  <span className="dm-sans-ui rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+                    C-{selectedComplaint.id}
+                  </span>
+                  <span className={`dm-sans-ui rounded-full px-3 py-1 text-xs font-medium ${getComplaintStatusTone(selectedComplaint.status).badge}`}>
+                    {getComplaintStatusLabel(selectedComplaint.status)}
+                  </span>
+                </div>
+                <p className="text-2xl font-black text-slate-900">{selectedComplaint.title}</p>
+                <p className="dm-sans-ui text-sm leading-7 text-slate-500">{selectedComplaint.description}</p>
+                <div className="grid gap-3">
+                  <div className="rounded-[22px] bg-slate-50 px-4 py-4">
+                    <p className="dm-sans-ui text-xs font-medium text-slate-400">Reporter</p>
+                    <p className="mt-2 text-lg font-black text-slate-900">
+                      {selectedComplaint.user?.name ||
+                        selectedComplaint.user?.email ||
+                        selectedComplaint.userEmail ||
+                        "Unknown"}
+                    </p>
+                  </div>
+                  <div className="rounded-[22px] bg-slate-50 px-4 py-4">
+                    <p className="dm-sans-ui text-xs font-medium text-slate-400">Location</p>
+                    <p className="mt-2 text-lg font-black text-slate-900">
+                      {formatComplaintLocation(selectedComplaint)}
+                    </p>
+                  </div>
+                </div>
               </div>
+            ) : (
+              <p className="dm-sans-ui mt-6 text-sm text-slate-500">
+                Pick a complaint from the queue to inspect it here.
+              </p>
+            )}
           </div>
 
-          <div className="bg-slate-900 p-12 rounded-[56px] text-white relative overflow-hidden group">
-              <div className="absolute inset-0 opacity-[0.05] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]"></div>
-              <h3 className="text-2xl font-black tracking-tighter uppercase italic mb-10 text-glow">System Logs</h3>
-              <div className="font-mono text-[9px] space-y-3 opacity-60">
-                  <p className="text-primary">&gt; Neural_Routing_v2.4.1 initialized.</p>
-                  <p>&gt; Syncing 14.2k active nodes across 198 wards.</p>
-                  <p>&gt; BBMP_SWM_Relay: Connection stable (9ms latency).</p>
-                  <p className="text-amber-400">&gt; Warning: High volume detected in Zone-7 (Eastern Corridor).</p>
-                  <p>&gt; AI_Classifier: Batch processing 450 new complaint vectors.</p>
-                  <p className="text-primary">&gt; Status: All systems nominal.</p>
-                  <div className="w-1 h-3 bg-primary animate-pulse inline-block align-middle ml-1"></div>
-              </div>
-              <button className="mt-12 w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Download Full Audit Trail</button>
+          <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
+            <h2 className="text-3xl font-black tracking-tighter text-slate-900">User Directory</h2>
+            <div className="mt-6 space-y-4">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="h-20 rounded-[28px] bg-slate-50 animate-pulse"></div>
+                ))
+              ) : users.length === 0 ? (
+                <p className="dm-sans-ui text-sm text-slate-500">No users synced yet.</p>
+              ) : (
+                [...users]
+                  .sort((a, b) => b.complaints.length - a.complaints.length)
+                  .map((user) => (
+                    <div
+                      key={user.id}
+                      className="rounded-[28px] border border-slate-100 bg-slate-50 px-5 py-4"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="text-lg font-black text-slate-900 truncate">
+                            {user.name || user.email.split("@")[0]}
+                          </p>
+                          <p className="dm-sans-ui mt-1 truncate text-sm text-slate-500">
+                            {user.email}
+                          </p>
+                          <p className="dm-sans-ui mt-2 text-xs text-slate-400">
+                            {user.clerkId ? "Clerk synced" : "Manual/local user"}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl bg-white px-4 py-3 text-center">
+                          <p className="text-2xl font-black text-slate-900">{user.complaints.length}</p>
+                          <p className="dm-sans-ui text-xs font-medium text-slate-400">reports</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+              )}
+            </div>
           </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.25fr_0.75fr]">
+        <div className="overflow-hidden rounded-[44px] border border-slate-100 bg-white shadow-2xl shadow-slate-200/20">
+          <div className="border-b border-slate-100 px-8 py-6">
+            <h2 className="text-3xl font-black tracking-tighter text-slate-900">Issue Map</h2>
+            <p className="dm-sans-ui mt-2 text-sm text-slate-500">
+              Real complaint markers across all geo-enabled reports.
+            </p>
+          </div>
+          {loading ? (
+            <div className="flex h-[420px] items-center justify-center bg-slate-50">
+              <div className="h-20 w-20 rounded-full border-8 border-slate-200 border-t-primary animate-spin"></div>
+            </div>
+          ) : mappedComplaints.length === 0 ? (
+            <div className="flex h-[420px] flex-col items-center justify-center bg-slate-50 px-6 text-center">
+              <p className="text-2xl font-black text-slate-900">No mapped complaints yet</p>
+            </div>
+          ) : (
+            <ComplaintLeafletMap complaints={mappedComplaints} />
+          )}
+        </div>
+
+        <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
+          <h2 className="text-3xl font-black tracking-tighter text-slate-900">Recent Intake</h2>
+          <div className="mt-6 space-y-4">
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="h-24 rounded-[28px] bg-slate-50 animate-pulse"></div>
+              ))
+            ) : (
+              complaints
+                .slice()
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+                )
+                .slice(0, 6)
+                .map((complaint) => {
+                  const tone = getComplaintStatusTone(complaint.status);
+                  return (
+                    <Link
+                      key={complaint.id}
+                      href={`/dashboard/complaint/${complaint.id}`}
+                      className="block rounded-[28px] border border-slate-100 bg-slate-50 px-5 py-4 transition-colors hover:bg-slate-100"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="text-lg font-black text-slate-900 line-clamp-1">{complaint.title}</p>
+                          <p className="dm-sans-ui mt-2 text-sm text-slate-500 line-clamp-2">{complaint.description}</p>
+                        </div>
+                        <span className={`dm-sans-ui shrink-0 rounded-full px-3 py-1 text-xs font-medium ${tone.badge}`}>
+                          {getComplaintStatusLabel(complaint.status)}
+                        </span>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between">
+                        <p className="dm-sans-ui text-xs font-medium text-slate-400">C-{complaint.id}</p>
+                        <p className="dm-sans-ui text-xs font-medium text-slate-400">{formatComplaintDate(complaint.createdAt)}</p>
+                      </div>
+                    </Link>
+                  );
+                })
+            )}
+          </div>
+          <div className="mt-8 rounded-[28px] bg-slate-900 px-5 py-5 text-white">
+            <p className="dm-sans-ui text-xs font-medium text-white/50">Top reporters right now</p>
+            <div className="mt-4 space-y-3">
+              {topUsers.map((user, index) => (
+                <div key={user.id} className="flex items-center justify-between">
+                  <p className="dm-sans-ui text-sm text-white/80">
+                    {index + 1}. {user.name || user.email.split("@")[0]}
+                  </p>
+                  <p className="text-sm font-black">{user.complaints.length}</p>
+                </div>
+              ))}
+              {!loading && topUsers.length === 0 ? (
+                <p className="dm-sans-ui text-sm text-white/60">No user activity yet.</p>
+              ) : null}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

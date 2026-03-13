@@ -64,6 +64,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.dm-sans-ui {
+  font-family: "DM Sans", sans-serif !important;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
 @layer utilities {
   .glass {
     @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl;
@@ -75,6 +81,5 @@ body {
     text-shadow: 0 0 20px rgba(132, 147, 74, 0.3);
   }
 }
-
 
 

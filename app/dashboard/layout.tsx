@@ -16,7 +16,7 @@ export default function DashboardLayout({
             <input 
               type="text" 
               placeholder="Search reports or wards..." 
-              className="w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
+              className="dm-sans-ui w-full pl-12 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-300"
             />
           </div>
           <div className="flex items-center gap-8">
@@ -25,7 +25,7 @@ export default function DashboardLayout({
                  <span className="material-symbols-outlined group-hover:scale-110 transition-transform">notifications</span>
                  <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                </button>
-                <Link href="/dashboard/submit" className="bg-primary text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center justify-center">
+                <Link href="/dashboard/submit" className="dm-sans-ui bg-primary text-white px-10 py-4 rounded-2xl text-sm font-medium hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center justify-center">
                   Report New Issue
                 </Link>
             </div>
@@ -41,4 +41,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-
