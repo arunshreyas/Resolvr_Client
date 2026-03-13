@@ -59,8 +59,8 @@ export default function Navbar() {
                   />
                 </div>
               </Show>
-              <Link href="/dashboard/submit" className="whitespace-nowrap bg-slate-900 hover:bg-primary text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
-                Report Issue
+              <Link href="/dashboard/submit" className="whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
+                Submit Report
               </Link>
             </div>
           </div>
