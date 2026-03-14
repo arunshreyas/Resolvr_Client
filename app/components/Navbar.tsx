@@ -3,8 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SignInButton, SignUpButton, UserButton, Show } from "@clerk/nextjs";
+import { useState } from "react";
 
 export default function Navbar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
     <>
       {/* Detached Logo - Fixed Top Left */}
@@ -21,8 +23,8 @@ export default function Navbar() {
       </Link>
 
       {/* Floating Centered Navbar */}
-      <nav className="fixed top-10 left-1/2 -translate-x-1/2 z-[100] w-auto">
-        <div className="bg-white/40 backdrop-blur-2xl border border-black/5 rounded-[40px] px-6 md:px-10 py-4 flex items-center justify-center gap-6 md:gap-12 shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+      <nav className="fixed top-10 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2.5rem)] md:w-auto">
+        <div className="bg-white/40 backdrop-blur-2xl border border-black/5 rounded-[40px] px-6 md:px-10 py-4 flex items-center justify-between md:justify-center gap-6 md:gap-12 shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
           
           <div className="hidden md:flex items-center gap-8">
             <div className="dm-sans-ui flex gap-6 text-sm font-medium text-slate-600">
@@ -80,18 +82,74 @@ export default function Navbar() {
                       />
                     </UserButton.MenuItems>
                   </UserButton>
+                  <Link href="/dashboard" className="dm-sans-ui whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
+                    Dashboard
+                  </Link>
                 </div>
               </Show>
-              <Link href="/dashboard" className="dm-sans-ui whitespace-nowrap bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl text-sm font-medium transition-all shadow-lg shadow-black/10 hover:scale-105 active:scale-95">
-                Dashboard
-              </Link>
             </div>
           </div>
           
-          <div className="md:hidden">
-            <span className="material-symbols-outlined text-slate-900 cursor-pointer hover:text-primary transition-colors">menu</span>
+          <div className="md:hidden flex items-center justify-end w-full">
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+              <span className="material-symbols-outlined text-slate-900 cursor-pointer hover:text-primary transition-colors">
+                {isMobileMenuOpen ? "close" : "menu"}
+              </span>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-20 left-0 w-full bg-white/95 backdrop-blur-xl border border-black/5 rounded-3xl p-6 shadow-2xl flex flex-col gap-6 md:hidden animate-fade-in">
+            <div className="flex flex-col gap-4">
+              <Link href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="dm-sans-ui text-base font-medium text-slate-600 hover:text-primary transition-colors">How it Works</Link>
+              <Link href="#stats" onClick={() => setIsMobileMenuOpen(false)} className="dm-sans-ui text-base font-medium text-slate-600 hover:text-primary transition-colors">Analytics</Link>
+              <Link href="#tech" onClick={() => setIsMobileMenuOpen(false)} className="dm-sans-ui text-base font-medium text-slate-600 hover:text-primary transition-colors">Technology</Link>
+            </div>
+            
+            <div className="h-px w-full bg-slate-900/10"></div>
+            
+            <div className="flex flex-col gap-3">
+              <Show when="signed-out">
+                <SignInButton mode="modal">
+                  <button className="dm-sans-ui w-full text-base font-medium px-6 py-4 bg-slate-900/5 hover:bg-slate-900/10 text-slate-900 border border-slate-900/10 rounded-2xl transition-all">
+                    Portal Login
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="dm-sans-ui w-full text-base font-medium px-6 py-4 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/10 rounded-2xl transition-all">
+                    Join Resolvr
+                  </button>
+                </SignUpButton>
+              </Show>
+              <Show when="signed-in">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                     <UserButton
+                        appearance={{
+                          elements: {
+                            userButtonAvatarBox: "w-12 h-12 rounded-xl",
+                          },
+                        }}
+                      />
+                     <Link
+                        href="/dashboard/settings"
+                        className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-900/10 bg-white text-slate-600 transition-all"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">
+                          computer
+                        </span>
+                      </Link>
+                  </div>
+                  <Link href="/dashboard" className="dm-sans-ui bg-slate-900 text-white px-6 py-4 rounded-2xl text-base font-medium transition-all shadow-lg text-center" onClick={() => setIsMobileMenuOpen(false)}>
+                    Dashboard
+                  </Link>
+                </div>
+              </Show>
+            </div>
+          </div>
+        )}
       </nav>
     </>
   );

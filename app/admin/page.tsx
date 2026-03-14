@@ -69,11 +69,15 @@ export default function AdminDashboard() {
   const [disputeAlerts, setDisputeAlerts] = useState<DisputeAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
+  const [resolveModalOpen, setResolveModalOpen] = useState(false);
+  const [resolveModalComplaintId, setResolveModalComplaintId] = useState<number | null>(null);
+  const [resolveNoteText, setResolveNoteText] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+
   const allowedAdminEmails = useMemo(
     () =>
       process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",")
@@ -195,10 +199,10 @@ export default function AdminDashboard() {
   const topUsers = [...users]
     .sort((a, b) => b.complaintCount - a.complaintCount)
     .slice(0, 5);
-  const openUrgentAlerts = disputeAlerts.filter((alert) => alert.status === "OPEN");
   const topPriorityComplaints = filteredComplaints.slice(0, 4);
+  const openUrgentAlerts = disputeAlerts.filter(alert => alert.status === "OPEN");
 
-  async function patchComplaint(id: number, status: ComplaintStatus) {
+  async function patchComplaint(id: number, status: ComplaintStatus, resolutionNote?: string) {
     try {
       setBusyId(id);
       setError(null);
@@ -210,7 +214,7 @@ export default function AdminDashboard() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, resolutionNote }),
       });
 
       if (!response.ok) throw new Error("Failed to update complaint.");
@@ -229,6 +233,14 @@ export default function AdminDashboard() {
     } finally {
       setBusyId(null);
     }
+  }
+
+  async function submitResolution() {
+    if (!resolveModalComplaintId) return;
+    await patchComplaint(resolveModalComplaintId, "RESOLVED", resolveNoteText);
+    setResolveModalOpen(false);
+    setResolveNoteText("");
+    setResolveModalComplaintId(null);
   }
 
   async function removeComplaint(id: number) {
@@ -276,7 +288,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-10 p-12">
+    <div className="space-y-8 md:space-y-10 p-4 md:p-12">
       <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <p className="dm-sans-ui mb-3 text-sm font-medium text-primary">Admin operations</p>
@@ -319,9 +331,9 @@ export default function AdminDashboard() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:gap-8 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="rounded-[40px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/30">
+          <div key={stat.label} className="rounded-[32px] md:rounded-[40px] border border-slate-100 bg-white p-6 md:p-8 shadow-2xl shadow-slate-200/30">
             <p className="dm-sans-ui text-sm font-medium text-slate-500">{stat.label}</p>
             <h2 className="mt-3 text-5xl font-black text-slate-900">{stat.value}</h2>
             <p className="dm-sans-ui mt-3 text-xs font-medium text-slate-400">{stat.tag}</p>
@@ -329,8 +341,8 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+      <div className="rounded-[32px] md:rounded-[44px] border border-slate-100 bg-white p-6 md:p-8 shadow-2xl shadow-slate-200/20">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="dm-sans-ui text-sm font-medium text-primary">
               Priority queue preview
@@ -404,8 +416,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="rounded-[44px] border border-amber-200 bg-amber-50/80 p-8 shadow-2xl shadow-amber-100/40">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div className="rounded-[32px] md:rounded-[44px] border border-amber-200 bg-amber-50/80 p-6 md:p-8 shadow-2xl shadow-amber-100/40">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="dm-sans-ui text-sm font-medium text-amber-700">
               Urgent dispute alerts
@@ -494,7 +506,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.2fr_0.8fr]">
         <div
           id="complaint-queue"
-          className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20"
+          className="rounded-[32px] md:rounded-[44px] border border-slate-100 bg-white p-6 md:p-8 shadow-2xl shadow-slate-200/20"
         >
           <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
@@ -580,14 +592,21 @@ export default function AdminDashboard() {
                         </div>
                       </button>
 
-                      <div className="grid gap-2 2xl:min-w-[230px]">
-                        <div className="grid grid-cols-2 gap-2">
+                      <div className="flex flex-col gap-4 2xl:min-w-[230px]">
+                        <div className="grid gap-2">
                           {statusActions.map((status) => (
                             <button
                               key={status}
                               type="button"
                               disabled={isBusy}
-                              onClick={() => void patchComplaint(complaint.id, status)}
+                              onClick={() => {
+                                if (status === "RESOLVED") {
+                                  setResolveModalComplaintId(complaint.id);
+                                  setResolveModalOpen(true);
+                                } else {
+                                  void patchComplaint(complaint.id, status);
+                                }
+                              }}
                               className={`dm-sans-ui rounded-2xl px-3 py-3 text-xs font-medium transition ${
                                 complaint.status === status
                                   ? "bg-slate-900 text-white"
@@ -626,8 +645,8 @@ export default function AdminDashboard() {
         </div>
 
         <div className="space-y-8">
-          <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
-            <h2 className="text-3xl font-black tracking-tighter text-slate-900">Selected Complaint</h2>
+          <div className="rounded-[32px] md:rounded-[44px] border border-slate-100 bg-white p-6 md:p-8 shadow-2xl shadow-slate-200/20">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900">Selected Complaint</h2>
             {selectedComplaint ? (
               <div className="mt-6 space-y-4">
                 <div className="flex flex-wrap gap-3">
@@ -681,8 +700,8 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
-            <h2 className="text-3xl font-black tracking-tighter text-slate-900">User Directory</h2>
+          <div className="rounded-[32px] md:rounded-[44px] border border-slate-100 bg-white p-6 md:p-8 shadow-2xl shadow-slate-200/20">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900">User Directory</h2>
             <div className="mt-6 space-y-4">
               {loading ? (
                 Array.from({ length: 4 }).map((_, index) => (
@@ -724,8 +743,8 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.25fr_0.75fr]">
-        <div className="overflow-hidden rounded-[44px] border border-slate-100 bg-white shadow-2xl shadow-slate-200/20">
-          <div className="border-b border-slate-100 px-8 py-6">
+        <div className="overflow-hidden rounded-[32px] md:rounded-[44px] border border-slate-100 bg-white shadow-2xl shadow-slate-200/20">
+          <div className="border-b border-slate-100 px-6 md:px-8 py-6">
             <h2 className="text-3xl font-black tracking-tighter text-slate-900">Issue Map</h2>
             <p className="dm-sans-ui mt-2 text-sm text-slate-500">
               Real complaint markers across all geo-enabled reports.
@@ -744,8 +763,8 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        <div className="rounded-[44px] border border-slate-100 bg-white p-8 shadow-2xl shadow-slate-200/20">
-          <h2 className="text-3xl font-black tracking-tighter text-slate-900">Recent Intake</h2>
+        <div className="rounded-[32px] md:rounded-[44px] border border-slate-100 bg-white p-6 md:p-8 shadow-2xl shadow-slate-200/20">
+          <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900">Recent Intake</h2>
           <div className="mt-6 space-y-4">
             {loading ? (
               Array.from({ length: 5 }).map((_, index) => (
@@ -803,6 +822,44 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Resolution Modal */}
+      {resolveModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-[32px] bg-white p-8 shadow-2xl">
+            <h3 className="text-2xl font-black text-slate-900">Resolve Complaint</h3>
+            <p className="dm-sans-ui mt-2 text-sm text-slate-500">
+              Please provide a resolution note. This will be visible to the citizen.
+            </p>
+            <textarea
+               value={resolveNoteText}
+               onChange={(e) => setResolveNoteText(e.target.value)}
+               className="dm-sans-ui mt-6 w-full h-32 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+               placeholder="Example: The pothole was filled with asphalt on March 14th by the road maintenance crew."
+            ></textarea>
+            <div className="mt-8 flex justify-end gap-3">
+               <button
+                 type="button"
+                 onClick={() => {
+                   setResolveModalOpen(false);
+                   setResolveNoteText("");
+                 }}
+                 className="dm-sans-ui rounded-2xl px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100"
+               >
+                 Cancel
+               </button>
+               <button
+                 type="button"
+                 disabled={!resolveNoteText.trim() || busyId === resolveModalComplaintId}
+                 onClick={() => void submitResolution()}
+                 className="dm-sans-ui rounded-2xl bg-primary px-5 py-3 text-sm font-medium text-white shadow-lg shadow-primary/20 disabled:opacity-50"
+               >
+                 {busyId === resolveModalComplaintId ? "Saving..." : "Mark as Resolved"}
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

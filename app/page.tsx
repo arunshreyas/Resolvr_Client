@@ -116,7 +116,7 @@ export default function Home() {
                 { step: "03", title: "Resolution", desc: "Follow real-time progress on your dashboard. Receive signed-off photo proof once resolved.", icon: "check_circle" }
               ].map((item, i) => (
                 <div key={item.step} className="group relative">
-                  <div className="bg-white p-12 rounded-[40px] border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl transition-all duration-500 hover:-translate-y-4">
+                  <div className="bg-white p-8 md:p-12 rounded-[40px] border border-slate-100 shadow-xl shadow-slate-200/40 hover:shadow-2xl transition-all duration-500 hover:-translate-y-4">
                     <span className="text-8xl font-black text-slate-200 absolute -top-10 left-10 pointer-events-none group-hover:text-primary/20 transition-colors">
                       {item.step}
                     </span>
@@ -144,7 +144,7 @@ export default function Home() {
           />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(132,147,74,0.16),transparent_30%),linear-gradient(180deg,rgba(9,21,59,0.12),rgba(9,21,59,0.35))]"></div>
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-16 lg:gap-8">
               {[
                 { title: "BBMP & BWSSB", label: "Multi-Agency Grid" },
                 { title: "100%", label: "Traceable History" },
@@ -182,7 +182,7 @@ export default function Home() {
                   { icon: "speed", title: "Real-time API", desc: "Synchronized updates between citizens and field agents." },
                   { icon: "query_stats", title: "Predictive Analytics", desc: "Identify urban decay before it becomes a crisis." }
                 ].map((feature, i) => (
-                  <div key={i} className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group">
+                  <div key={i} className="bg-white p-6 md:p-8 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group">
                     <span className="material-symbols-outlined text-primary text-4xl mb-6 block group-hover:scale-110 transition-transform">{feature.icon}</span>
                     <h3 className="font-black uppercase text-[10px] tracking-widest text-slate-900 mb-2">{feature.title}</h3>
                     <p className="text-xs text-slate-500 leading-relaxed">{feature.desc}</p>

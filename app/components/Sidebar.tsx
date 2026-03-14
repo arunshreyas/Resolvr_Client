@@ -19,9 +19,9 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`${
+      className={`hidden md:flex ${
         isExpanded ? "w-72" : "w-24"
-      } bg-nav-bg text-white h-full shrink-0 flex flex-col shadow-2xl relative overflow-hidden transition-all duration-300 ease-in-out`}
+      } bg-nav-bg text-white h-full shrink-0 flex-col shadow-2xl relative overflow-hidden transition-all duration-300 ease-in-out`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >

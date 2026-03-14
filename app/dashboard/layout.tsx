@@ -1,4 +1,5 @@
 import Sidebar from "../components/Sidebar";
+import BottomNav from "../components/BottomNav";
 import Link from "next/link";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { UserButton } from "@clerk/nextjs";
@@ -12,7 +13,7 @@ export default function DashboardLayout({
     <div className="flex h-screen bg-background-light overflow-hidden selection:bg-primary/30">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-24 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-10 shrink-0">
+        <header className="h-20 md:h-24 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 md:px-10 shrink-0">
           <div className="flex-1 max-w-xl relative group">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors">search</span>
             <input 
@@ -55,6 +56,7 @@ export default function DashboardLayout({
             {children}
           </div>
         </main>
+        <BottomNav />
       </div>
     </div>
   );

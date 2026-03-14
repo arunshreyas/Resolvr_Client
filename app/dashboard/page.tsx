@@ -84,7 +84,7 @@ export default function CitizenDashboard() {
       : "No complaints filed yet";
 
   return (
-    <div className="p-12 space-y-12">
+    <div className="p-4 md:p-12 space-y-8 md:space-y-12 pb-24 md:pb-12">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h2 className="text-5xl font-black tracking-tighter mb-2 text-slate-900">
@@ -116,7 +116,7 @@ export default function CitizenDashboard() {
               stat.color === "bg-sage-200"
                 ? "bg-slate-100 text-slate-900 border border-slate-200"
                 : `${stat.color} text-white`
-            } p-10 rounded-[40px] shadow-2xl shadow-slate-200/40 relative overflow-hidden group hover:-translate-y-2 transition-all duration-500`}
+            } p-6 md:p-10 rounded-[32px] md:rounded-[40px] shadow-2xl shadow-slate-200/40 relative overflow-hidden group hover:-translate-y-2 transition-all duration-500`}
           >
             <div
               className={`absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-10 group-hover:scale-150 transition-transform duration-1000 ${
@@ -160,8 +160,8 @@ export default function CitizenDashboard() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_0.8fr] gap-8">
-        <div className="bg-white rounded-[48px] border border-slate-100 shadow-2xl shadow-slate-200/20 overflow-hidden">
-          <div className="p-12 border-b border-slate-50 flex items-center justify-between">
+        <div className="bg-white rounded-[32px] md:rounded-[48px] border border-slate-100 shadow-2xl shadow-slate-200/20 overflow-hidden">
+          <div className="p-6 md:p-12 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 className="text-2xl font-black tracking-tighter italic text-slate-900">
                 Recent Complaints
@@ -223,7 +223,7 @@ export default function CitizenDashboard() {
                   <Link
                     key={complaint.id}
                     href={`/dashboard/complaint/${complaint.id}`}
-                    className="flex flex-col gap-4 p-8 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-4 p-6 md:p-8 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-3 mb-2">

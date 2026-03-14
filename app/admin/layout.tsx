@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { UserButton } from "@clerk/nextjs";
+import AdminMobileNav from "../components/AdminMobileNav";
 
 const navItems = [
   { icon: "analytics", label: "Intelligence", href: "/admin" },
@@ -50,7 +51,7 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-background-light selection:bg-primary/30">
-      <aside className="w-72 bg-nav-bg text-white h-full flex flex-col shadow-2xl relative overflow-hidden">
+      <aside className="hidden lg:flex w-72 bg-nav-bg text-white h-full flex-col shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
 
         <Link
@@ -114,24 +115,27 @@ export default function AdminLayout({
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-28 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-12 shrink-0">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-3xl font-black tracking-tighter text-slate-900 italic">
-              {heading.title}
-            </h2>
-            <p className="dm-sans-ui text-sm font-medium text-slate-400">
-              {heading.subtitle}
-            </p>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        <header className="h-20 lg:h-28 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 lg:px-12 shrink-0 z-50">
+          <div className="flex items-center gap-4">
+            <AdminMobileNav />
+            <div className="flex flex-col gap-1">
+              <h2 className="text-xl lg:text-3xl font-black tracking-tighter text-slate-900 italic line-clamp-1">
+                {heading.title}
+              </h2>
+              <p className="hidden sm:block dm-sans-ui text-xs lg:text-sm font-medium text-slate-400">
+                {heading.subtitle}
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-10">
+          <div className="flex items-center gap-6 lg:gap-10">
             <div className="hidden lg:flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
               <span className="dm-sans-ui text-sm font-medium text-slate-500">
                 Live infrastructure relay
               </span>
             </div>
-            <div className="flex items-center gap-6 pl-10 border-l border-slate-100">
+            <div className="flex items-center gap-4 lg:gap-6 lg:pl-10 lg:border-l border-slate-100">
                <Link
                  href="/dashboard/settings"
                  aria-label="Open local settings"

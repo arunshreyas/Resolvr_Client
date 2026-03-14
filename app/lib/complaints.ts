@@ -14,6 +14,7 @@ export type Complaint = {
   latitude: number | null;
   longitude: number | null;
   userEmail: string | null;
+  resolutionNote?: string;
   user: {
     id: number;
     name: string | null;

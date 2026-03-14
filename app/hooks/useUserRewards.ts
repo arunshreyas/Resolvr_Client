@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
 export type UserProfile = {
@@ -14,6 +14,7 @@ export type UserProfile = {
 export function useUserRewards() {
   const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded, isSignedIn } = useUser();
+  const { getToken } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,8 +38,13 @@ export function useUserRewards() {
         setLoading(true);
         setError(null);
 
+        const token = await getToken();
+        
         const response = await fetch(`${apiBaseUrl}/users/me`, {
           cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (!response.ok) {
@@ -70,7 +76,7 @@ export function useUserRewards() {
     return () => {
       isCancelled = true;
     };
-  }, [apiBaseUrl, isLoaded, isSignedIn, user]);
+  }, [apiBaseUrl, isLoaded, isSignedIn, user, getToken]);
 
   return {
     profile,
