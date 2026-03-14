@@ -10,9 +10,11 @@ import {
   isComplaintActive,
 } from "@/app/lib/complaints";
 import { useUserComplaints } from "@/app/hooks/useUserComplaints";
+import { useUserRewards } from "@/app/hooks/useUserRewards";
 
 export default function CitizenDashboard() {
   const { complaints, loading, error, user } = useUserComplaints();
+  const { rewardPoints } = useUserRewards();
 
   const stats = useMemo(() => {
     const total = complaints.length;
@@ -56,8 +58,15 @@ export default function CitizenDashboard() {
         color: "bg-red-500",
         tag: attention > 0 ? "Review needed" : "All clear",
       },
+      {
+        label: "Civic Impact",
+        value: String(rewardPoints),
+        icon: "stars",
+        color: "bg-amber-500",
+        tag: rewardPoints > 0 ? "~₹" + (rewardPoints / 10).toFixed(0) + " discount" : "Earn points",
+      },
     ];
-  }, [complaints]);
+  }, [complaints, rewardPoints]);
 
   const latestComplaints = useMemo(
     () =>
@@ -99,7 +108,7 @@ export default function CitizenDashboard() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
         {stats.map((stat) => (
           <div
             key={stat.label}
