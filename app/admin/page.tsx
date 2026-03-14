@@ -307,7 +307,7 @@ export default function AdminDashboard() {
           <button
             type="button"
             onClick={() => void loadData()}
-            className="dm-sans-ui rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-700 shadow-sm"
+            className="dm-sans-ui rounded-2xl bg-primary px-5 py-3 text-sm font-medium text-white shadow-lg shadow-primary/20"
           >
             Refresh
           </button>
@@ -622,7 +622,7 @@ export default function AdminDashboard() {
                         <div className="flex gap-2">
                           <Link
                             href={`/dashboard/complaint/${complaint.id}`}
-                            className="dm-sans-ui flex-1 rounded-2xl bg-white px-4 py-3 text-center text-xs font-medium text-slate-700"
+                            className="dm-sans-ui flex-1 rounded-2xl bg-primary px-4 py-3 text-center text-xs font-medium text-white shadow-lg shadow-primary/20"
                           >
                             Open detail
                           </Link>
@@ -691,6 +691,12 @@ export default function AdminDashboard() {
                       {formatComplaintLocation(selectedComplaint)}
                     </p>
                   </div>
+                  {selectedComplaint.resolutionNote && (
+                    <div className="rounded-[22px] bg-emerald-50 px-4 py-4 border border-emerald-100">
+                      <p className="dm-sans-ui text-xs font-black uppercase tracking-widest text-emerald-700">Resolution Note</p>
+                      <p className="dm-sans-ui mt-2 text-sm text-emerald-900 italic">"{selectedComplaint.resolutionNote}"</p>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -843,8 +849,9 @@ export default function AdminDashboard() {
                  onClick={() => {
                    setResolveModalOpen(false);
                    setResolveNoteText("");
+                   setResolveModalComplaintId(null);
                  }}
-                 className="dm-sans-ui rounded-2xl px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                 className="dm-sans-ui rounded-2xl bg-slate-200 px-5 py-3 text-sm font-medium text-slate-700 hover:bg-slate-300 disabled:opacity-50"
                >
                  Cancel
                </button>

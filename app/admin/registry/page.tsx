@@ -226,7 +226,7 @@ export default function AdminRegistryPage() {
                     <div className="flex gap-2">
                       <Link
                         href={`/dashboard/complaint/${complaint.id}`}
-                        className="dm-sans-ui flex-1 rounded-2xl bg-slate-50 px-4 py-3 text-center text-xs font-medium text-slate-700"
+                        className="dm-sans-ui flex-1 rounded-2xl bg-primary px-4 py-3 text-center text-xs font-medium text-white shadow-lg shadow-primary/20"
                       >
                         Open detail
                       </Link>

@@ -317,7 +317,7 @@ export default function CitizenDashboard() {
                     Browse every complaint with dates and status
                   </p>
                 </div>
-                <span className="material-symbols-outlined">folder_open</span>
+                <span className="material-symbols-outlined text-slate-300">visibility</span>
               </Link>
             </div>
           </div>

@@ -193,6 +193,17 @@ export default function ComplaintDetailPage() {
               {complaint.description}
             </p>
 
+            {complaint.resolutionNote && (
+              <div className="mt-8 rounded-3xl bg-emerald-50/50 border border-emerald-100 p-6">
+                <p className="dm-sans-ui text-xs font-black uppercase tracking-widest text-emerald-700 mb-3">
+                  Official Resolution Note
+                </p>
+                <p className="dm-sans-ui text-sm leading-7 text-emerald-900 italic">
+                  "{complaint.resolutionNote}"
+                </p>
+              </div>
+            )}
+
             <div className="mt-10 grid gap-6 border-t border-slate-100 pt-8 sm:grid-cols-2">
               <div>
                 <p className="dm-sans-ui text-xs font-medium text-slate-400">

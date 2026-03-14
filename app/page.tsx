@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { DottedSurface } from "@/components/ui/dotted-surface";
 import { Typewriter } from "@/components/ui/typewriter";
+import HeroCarousel from "./components/HeroCarousel";
 
 export default function Home() {
   return (
@@ -74,14 +75,7 @@ export default function Home() {
             </div>
 
             <div className="relative group">
-              <div className="relative aspect-[4/5] md:aspect-square bg-slate-200/80 rounded-[40px] overflow-hidden border border-white shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]">
-                <img
-                  alt="Bengaluru city landscape"
-                  className="object-cover w-full h-full transform transition-transform duration-1000 group-hover:scale-110"
-                  src="/assets/bengaluru_hero.png"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
-              </div>
+              <HeroCarousel />
 
               <div className="absolute -bottom-10 -left-10 glass p-8 rounded-[32px] max-w-[280px] hidden md:block animate-float">
                 <div className="flex items-center gap-5">
