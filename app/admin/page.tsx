@@ -697,6 +697,34 @@ export default function AdminDashboard() {
                       <p className="dm-sans-ui mt-2 text-sm text-emerald-900 italic">"{selectedComplaint.resolutionNote}"</p>
                     </div>
                   )}
+
+                  <div className="pt-4 border-t border-slate-100">
+                    <p className="dm-sans-ui text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Quick Update</p>
+                    <div className="grid grid-cols-2 gap-2">
+                       {statusActions.map((status) => (
+                         <button
+                           key={status}
+                           type="button"
+                           disabled={busyId === selectedComplaint.id}
+                           onClick={() => {
+                             if (status === "RESOLVED") {
+                               setResolveModalComplaintId(selectedComplaint.id);
+                               setResolveModalOpen(true);
+                             } else {
+                               void patchComplaint(selectedComplaint.id, status);
+                             }
+                           }}
+                           className={`dm-sans-ui rounded-xl px-3 py-3 text-xs font-bold transition ${
+                             selectedComplaint.status === status
+                               ? "bg-slate-900 text-white"
+                               : "bg-slate-50 text-slate-600 hover:bg-slate-200"
+                           } disabled:opacity-50`}
+                         >
+                           {status === "IN_PROGRESS" ? "In Progress" : status.charAt(0) + status.slice(1).toLowerCase()}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -840,7 +868,7 @@ export default function AdminDashboard() {
             <textarea
                value={resolveNoteText}
                onChange={(e) => setResolveNoteText(e.target.value)}
-               className="dm-sans-ui mt-6 w-full h-32 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+               className="dm-sans-ui mt-6 w-full h-32 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                placeholder="Example: The pothole was filled with asphalt on March 14th by the road maintenance crew."
             ></textarea>
             <div className="mt-8 flex justify-end gap-3">
