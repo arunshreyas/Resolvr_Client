@@ -13,8 +13,9 @@ import {
   isComplaintActive,
 } from "@/app/lib/complaints";
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 export default function ComplaintDetailPage() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded, isSignedIn } = useUser();
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -47,7 +48,7 @@ export default function ComplaintDetailPage() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${apiBaseUrl}/complaints/${params.id}`, {
+        const response = await fetchWithRetry(`${API_BASE_URL}/complaints/${params.id}`, {
           cache: "no-store",
         });
 
@@ -88,7 +89,7 @@ export default function ComplaintDetailPage() {
     return () => {
       isCancelled = true;
     };
-  }, [apiBaseUrl, isLoaded, isSignedIn, params?.id, user]);
+  }, [isLoaded, isSignedIn, params?.id, user]);
 
   const timeline = useMemo(() => {
     if (!complaint) {

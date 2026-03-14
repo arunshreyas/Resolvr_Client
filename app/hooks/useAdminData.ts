@@ -11,8 +11,9 @@ export type AdminUser = {
   complaints: Complaint[];
 };
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 export function useAdminData() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +25,8 @@ export function useAdminData() {
 
     try {
       const [usersResponse, complaintsResponse] = await Promise.all([
-        fetch(`${apiBaseUrl}/users`, { cache: "no-store" }),
-        fetch(`${apiBaseUrl}/complaints`, { cache: "no-store" }),
+        fetchWithRetry(`${API_BASE_URL}/users`, { cache: "no-store", timeout: 15000 }),
+        fetchWithRetry(`${API_BASE_URL}/complaints`, { cache: "no-store", timeout: 15000 }),
       ]);
 
       if (!usersResponse.ok || !complaintsResponse.ok) {
@@ -46,14 +47,13 @@ export function useAdminData() {
     } finally {
       setLoading(false);
     }
-  }, [apiBaseUrl]);
+  }, []);
 
   useEffect(() => {
     void loadData();
   }, [loadData]);
 
   return {
-    apiBaseUrl,
     users,
     complaints,
     loading,

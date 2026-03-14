@@ -11,8 +11,9 @@ export type UserProfile = {
   rewardPoints: number;
 };
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 export function useUserRewards() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded, isSignedIn } = useUser();
   const { getToken } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -40,7 +41,7 @@ export function useUserRewards() {
 
         const token = await getToken();
         
-        const response = await fetch(`${apiBaseUrl}/users/me`, {
+        const response = await fetchWithRetry(`${API_BASE_URL}/users/me`, {
           cache: "no-store",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -76,7 +77,7 @@ export function useUserRewards() {
     return () => {
       isCancelled = true;
     };
-  }, [apiBaseUrl, isLoaded, isSignedIn, user, getToken]);
+  }, [isLoaded, isSignedIn, user, getToken]);
 
   return {
     profile,

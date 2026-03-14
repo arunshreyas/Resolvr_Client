@@ -17,8 +17,9 @@ const ComplaintLocationPicker = dynamic(
   },
 );
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 export default function SubmitComplaint() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
   const { getToken } = useAuth();
   const { latitude, longitude, error: geoError, loading: geoLoading } =
@@ -91,7 +92,7 @@ export default function SubmitComplaint() {
         );
       }
 
-      const response = await fetch(`${apiBaseUrl}/complaints`, {
+      const response = await fetchWithRetry(`${API_BASE_URL}/complaints`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

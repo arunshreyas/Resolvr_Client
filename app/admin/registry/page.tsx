@@ -10,6 +10,7 @@ import {
   getComplaintStatusTone,
 } from "@/app/lib/complaints";
 import { useAdminData } from "@/app/hooks/useAdminData";
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
 
 type StatusFilter = "ALL" | ComplaintStatus;
 
@@ -21,7 +22,7 @@ const statusActions: ComplaintStatus[] = [
 ];
 
 export default function AdminRegistryPage() {
-  const { apiBaseUrl, complaints, loading, error, setComplaints } =
+  const { complaints, loading, error, setComplaints } =
     useAdminData();
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
@@ -70,7 +71,7 @@ export default function AdminRegistryPage() {
     try {
       setBusyId(id);
       setActionError(null);
-      const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
+      const response = await fetchWithRetry(`${API_BASE_URL}/complaints/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -95,7 +96,7 @@ export default function AdminRegistryPage() {
     try {
       setBusyId(id);
       setActionError(null);
-      const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
+      const response = await fetchWithRetry(`${API_BASE_URL}/complaints/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete complaint.");

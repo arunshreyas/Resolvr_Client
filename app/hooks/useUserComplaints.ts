@@ -4,8 +4,9 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import type { Complaint } from "@/app/lib/complaints";
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 export function useUserComplaints() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded, isSignedIn } = useUser();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ export function useUserComplaints() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${apiBaseUrl}/complaints`, {
+        const response = await fetchWithRetry(`${API_BASE_URL}/complaints`, {
           cache: "no-store",
         });
 
@@ -67,7 +68,7 @@ export function useUserComplaints() {
     return () => {
       isCancelled = true;
     };
-  }, [apiBaseUrl, isLoaded, isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user]);
 
   return {
     complaints,

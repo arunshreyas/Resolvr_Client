@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 export default function RegisterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -22,7 +24,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const response = await fetch("/users", {
+      const response = await fetchWithRetry(`${API_BASE_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

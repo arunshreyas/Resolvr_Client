@@ -48,6 +48,8 @@ type RankedComplaint = Complaint & {
 
 type StatusFilter = "ALL" | ComplaintStatus;
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 const ComplaintLeafletMap = dynamic(
   () => import("@/app/components/ComplaintLeafletMap"),
   { ssr: false },
@@ -61,7 +63,6 @@ const statusActions: ComplaintStatus[] = [
 ];
 
 export default function AdminDashboard() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded, isSignedIn } = useUser();
   const { getToken } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -102,7 +103,7 @@ export default function AdminDashboard() {
         throw new Error("Missing admin session token.");
       }
 
-      const response = await fetch(`${apiBaseUrl}/complaints/admin/board`, {
+      const response = await fetchWithRetry(`${API_BASE_URL}/complaints/admin/board`, {
         cache: "no-store",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -129,7 +130,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [apiBaseUrl, currentUserEmail, getToken, isSignedIn]);
+  }, [currentUserEmail, getToken, isSignedIn]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -208,7 +209,7 @@ export default function AdminDashboard() {
       setError(null);
       const token = await getToken();
 
-      const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
+      const response = await fetchWithRetry(`${API_BASE_URL}/complaints/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -218,7 +219,7 @@ export default function AdminDashboard() {
       });
 
       if (!response.ok) throw new Error("Failed to update complaint.");
-      const updated = (await response.json()) as Complaint;
+      const updated = (await response.json()) as RankedComplaint;
       setComplaints((current) =>
         current.map((complaint) =>
           complaint.id === id ? { ...complaint, ...updated } : complaint,
@@ -250,16 +251,20 @@ export default function AdminDashboard() {
       setError(null);
       const token = await getToken();
 
-      const response = await fetch(`${apiBaseUrl}/complaints/${id}`, {
+      const response = await fetchWithRetry(`${API_BASE_URL}/complaints/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (!response.ok) throw new Error("Failed to delete complaint.");
-      setComplaints((current) => current.filter((complaint) => complaint.id !== id));
+      
       const complaintOwnerId =
         complaints.find((complaint) => complaint.id === id)?.user?.id ?? null;
+      
+      setComplaints((current) => current.filter((complaint) => complaint.id !== id));
+      
       setUsers((current) =>
         current.map((user) => ({
           ...user,
@@ -269,6 +274,7 @@ export default function AdminDashboard() {
               : user.complaintCount,
         })),
       );
+
       if (selectedId === id) setSelectedId(null);
       setMessage(`Complaint C-${id} deleted.`);
     } catch (err: unknown) {

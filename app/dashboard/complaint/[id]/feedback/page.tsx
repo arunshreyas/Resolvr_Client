@@ -17,8 +17,9 @@ type ChatMessage = {
   html?: string;
 };
 
+import { API_BASE_URL, fetchWithRetry } from "@/app/lib/api";
+
 export default function ComplaintFeedbackPage() {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { user, isLoaded, isSignedIn } = useUser();
   const { getToken } = useAuth();
   const params = useParams<{ id: string }>();
@@ -62,7 +63,7 @@ export default function ComplaintFeedbackPage() {
         setLoadingComplaint(true);
         setError(null);
 
-        const response = await fetch(`${apiBaseUrl}/complaints/${params.id}`, {
+        const response = await fetchWithRetry(`${API_BASE_URL}/complaints/${params.id}`, {
           cache: "no-store",
         });
 
@@ -99,7 +100,7 @@ export default function ComplaintFeedbackPage() {
     return () => {
       isCancelled = true;
     };
-  }, [apiBaseUrl, isLoaded, isSignedIn, params?.id, user?.id]);
+  }, [isLoaded, isSignedIn, params?.id, user?.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -136,8 +137,8 @@ export default function ComplaintFeedbackPage() {
       setMessages(nextMessages);
       setDraft("");
 
-      const response = await fetch(
-        `${apiBaseUrl}/complaints/${complaint.id}/dispute-chat`,
+      const response = await fetchWithRetry(
+        `${API_BASE_URL}/complaints/${complaint.id}/dispute-chat`,
         {
           method: "POST",
           headers: {
