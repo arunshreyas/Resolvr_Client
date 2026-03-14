@@ -5,6 +5,7 @@ import { BGPattern } from "@/components/ui/bg-pattern";
 import { DottedSurface } from "@/components/ui/dotted-surface";
 import { Typewriter } from "@/components/ui/typewriter";
 import HeroCarousel from "./components/HeroCarousel";
+import { HoverButton } from "@/components/ui/hover-button";
 
 export default function Home() {
   return (
@@ -62,10 +63,11 @@ export default function Home() {
               </div>
 
               <div className="flex flex-wrap gap-5">
-                <Link href="/dashboard/submit" className="group relative bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-3 overflow-hidden">
-                  <span className="relative z-10">Report an Issue</span>
-                  <span className="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">add_circle</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/0 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                <Link href="/dashboard/submit">
+                  <HoverButton className="px-10 py-5 rounded-2xl text-lg font-bold shadow-2xl flex items-center gap-3 bg-slate-900 border-none">
+                    <span>Report an Issue</span>
+                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">add_circle</span>
+                  </HoverButton>
                 </Link>
                 <Link href="/dashboard" className="bg-white/80 backdrop-blur-md hover:bg-white text-slate-900 border border-slate-200/50 px-10 py-5 rounded-2xl text-lg font-bold shadow-xl shadow-slate-200/20 flex items-center gap-3 transition-all">
                   <span className="material-symbols-outlined">track_changes</span>
@@ -83,7 +85,7 @@ export default function Home() {
                     <span className="material-symbols-outlined text-3xl">verified</span>
                   </div>
                   <div>
-                    <p className="text-3xl font-black text-slate-900">12.4k</p>
+                    <p className="text-3xl font-black text-slate-900">100%</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-800">Issues Resolved</p>
                   </div>
                 </div>

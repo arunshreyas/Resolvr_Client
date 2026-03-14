@@ -42,7 +42,6 @@ export default function RegisterPage() {
       }
 
       setSuccess(true);
-      console.log("Resolvr: Citizen Node Registered via Manual Entry");
       
       // Redirect after a short delay
       setTimeout(() => {

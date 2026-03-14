@@ -22,7 +22,6 @@ export async function fetchWithRetry(url: string, options: FetchOptions = {}): P
 
     try {
       if (i > 0) {
-        console.log(`Retry ${i}/${retries} for ${url}...`);
         await new Promise(resolve => setTimeout(resolve, retryDelay * i));
       }
 
@@ -32,16 +31,19 @@ export async function fetchWithRetry(url: string, options: FetchOptions = {}): P
       });
 
       clearTimeout(id);
+
+      // Handle Cloudflare/Tunnel errors specifically
+      if (response.status === 530 || response.status === 502) {
+        console.error(`🚩 Tunnel Error (${response.status}): Cloudflare cannot reach your local backend. Please restart your tunnel!`);
+      }
+
       return response;
 
     } catch (err: any) {
       clearTimeout(id);
       lastError = err;
       
-      // Don't retry if it's an abort (manual or timeout) unless you want to
-      if (err.name === 'AbortError') {
-        console.warn(`Fetch to ${url} timed out after ${timeout}ms`);
-      } else {
+      if (err.name !== 'AbortError') {
         console.error(`Fetch to ${url} failed: ${err.message}`);
       }
 

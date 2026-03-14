@@ -4,13 +4,24 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
-export const metadata: Metadata = {
-  title: "Resolvr. Bengaluru - Fix Your City Together",
-  description: "AI-powered civic issue resolution for a smarter, cleaner city.",
-};
-
+import { Toaster } from "sonner";
 import PageTransition from "./components/PageTransition";
 import { BGPattern } from "@/components/ui/bg-pattern";
+
+export const metadata: Metadata = {
+  title: "Resolvr. Bengaluru | Fix Your City Together",
+  description: "AI-powered civic issue resolution for a smarter, cleaner city. Report, track, and resolve urban issues in real-time.",
+  keywords: ["Bengaluru", "Civic Issues", "BBMP", "BWSSB", "Governance", "Smart City", "Resolvr"],
+  authors: [{ name: "Resolvr Team" }],
+  openGraph: {
+    title: "Resolvr. Bengaluru",
+    description: "Fix Your City Together. Report urban issues and track resolution in real-time.",
+    url: "https://resolvr-client.vercel.app",
+    siteName: "Resolvr",
+    locale: "en_IN",
+    type: "website",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -40,6 +51,7 @@ export default function RootLayout({
       <body className="antialiased">
         <ClerkProvider>
           <ThemeProvider>
+            <Toaster position="top-right" richColors closeButton />
             <PageTransition>
               <BGPattern
                 variant="grid"

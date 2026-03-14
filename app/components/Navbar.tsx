@@ -28,9 +28,9 @@ export default function Navbar() {
           
           <div className="hidden md:flex items-center gap-8">
             <div className="dm-sans-ui flex gap-6 text-sm font-medium text-slate-600">
-              <Link href="#how-it-works" className="whitespace-nowrap hover:text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">How it Works</Link>
-              <Link href="#stats" className="whitespace-nowrap hover:text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Analytics</Link>
-              <Link href="#tech" className="whitespace-nowrap hover:text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Technology</Link>
+              <Link href="#how-it-works" className="whitespace-nowrap hover:text-primary transition-all duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">How it Works</Link>
+              <Link href="#stats" className="whitespace-nowrap hover:text-primary transition-all duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Analytics</Link>
+              <Link href="#tech" className="whitespace-nowrap hover:text-primary transition-all duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all hover:after:w-full">Technology</Link>
             </div>
             
             <div className="h-6 w-px bg-slate-900/10"></div>
@@ -39,12 +39,12 @@ export default function Navbar() {
               <Show when="signed-out">
                 <div className="flex gap-2">
                   <SignInButton mode="modal">
-                    <button className="dm-sans-ui whitespace-nowrap text-sm font-medium px-6 py-3 bg-slate-900/5 hover:bg-slate-900/10 text-slate-900 border border-slate-900/10 rounded-2xl transition-all">
+                    <button className="dm-sans-ui whitespace-nowrap text-sm font-medium px-6 py-3 bg-slate-900/5 hover:bg-slate-900/10 text-slate-900 border border-slate-900/10 rounded-2xl transition-all hover:scale-105 active:scale-95">
                       Portal Login
                     </button>
                   </SignInButton>
                   <SignUpButton mode="modal">
-                    <button className="dm-sans-ui whitespace-nowrap text-sm font-medium px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/10 rounded-2xl transition-all">
+                    <button className="dm-sans-ui whitespace-nowrap text-sm font-medium px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/10 rounded-2xl transition-all hover:scale-105 active:scale-95">
                       Join Resolvr
                     </button>
                   </SignUpButton>
@@ -55,7 +55,7 @@ export default function Navbar() {
                   <Link
                     href="/dashboard/settings"
                     aria-label="Open local settings"
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-900/10 bg-white/70 text-slate-600 transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-900/10 bg-white/70 text-slate-600 transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary hover:scale-110 active:scale-95"
                   >
                     <span className="material-symbols-outlined text-[20px]">
                       computer
@@ -64,7 +64,7 @@ export default function Navbar() {
                   <UserButton
                     appearance={{
                       elements: {
-                        userButtonAvatarBox: "w-10 h-10 rounded-xl",
+                        userButtonAvatarBox: "w-10 h-10 rounded-xl transition-transform hover:scale-110",
                       },
                     }}
                   >

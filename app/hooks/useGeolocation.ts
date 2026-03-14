@@ -22,7 +22,6 @@ export const useGeolocation = () => {
     }
 
     const onSuccess = (position: GeolocationPosition) => {
-      console.log('Location captured:', position.coords.latitude, position.coords.longitude);
       setState({
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
@@ -32,7 +31,6 @@ export const useGeolocation = () => {
     };
 
     const onError = (error: GeolocationPositionError) => {
-      console.error('Geolocation Error:', error);
       let message = 'An unknown error occurred';
       switch (error.code) {
         case error.PERMISSION_DENIED:
